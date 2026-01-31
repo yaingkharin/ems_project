@@ -9,24 +9,6 @@ from app.dto.responses.venue_response import VenueResponse
 
 class VenueService:
     @staticmethod
-    def create_table():
-        """
-        Create the tbl_venue table using raw SQL.
-        """
-        query = """
-        CREATE TABLE IF NOT EXISTS tbl_venue (
-            venue_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name VARCHAR(255) NOT NULL,
-            address TEXT NOT NULL,
-            capacity INTEGER NOT NULL,
-            contact_info TEXT
-        );
-        """
-        with connection.cursor() as cursor:
-            cursor.execute(query)
-        return "tbl_venue table created successfully."
-
-    @staticmethod
     def create_venue(request_data: dict) -> VenueResponse:
         venue = Venue.objects.create(
             name=request_data['name'],

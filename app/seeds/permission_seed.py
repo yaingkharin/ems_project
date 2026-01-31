@@ -43,6 +43,12 @@ def seed_permissions():
         {'name': 'create_venues', 'display_name': 'Create Venues', 'group': 'Venues', 'sort': 3},
         {'name': 'edit_venues', 'display_name': 'Edit Venues', 'group': 'Venues', 'sort': 4},
         {'name': 'delete_venues', 'display_name': 'Delete Venues', 'group': 'Venues', 'sort': 5},
+        # Category Management Permissions
+        {'name': 'all_categories', 'display_name': 'All Categories', 'group': 'Categories', 'sort': 1},
+        {'name': 'view_categories', 'display_name': 'View Categories', 'group': 'Categories', 'sort': 2},
+        {'name': 'create_categories', 'display_name': 'Create Categories', 'group': 'Categories', 'sort': 3},
+        {'name': 'edit_categories', 'display_name': 'Edit Categories', 'group': 'Categories', 'sort': 4},
+        {'name': 'delete_categories', 'display_name': 'Delete Categories', 'group': 'Categories', 'sort': 5},
     ]
 
     for perm_data in permissions_data:
