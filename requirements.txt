@@ -1,0 +1,53 @@
+# ASGI (Asynchronous Server Gateway Interface) implementation for Django.
+asgiref==3.11.0
+
+# For hashing passwords.
+bcrypt==5.0.0
+
+# The web framework for the project.
+Django==6.0.1
+
+# Handles Cross-Origin Resource Sharing (CORS).
+django-cors-headers==4.9.0
+
+# For filtering querysets based on user input.
+django-filter==25.2
+
+# Toolkit for building Web APIs.
+djangorestframework==3.16.1
+
+# JWT (JSON Web Token) authentication for Django REST Framework.
+djangorestframework_simplejwt==5.5.1
+
+# Generates Swagger/OpenAPI documentation for Django REST Framework APIs.
+drf-yasg==1.21.14
+
+# A library for string transformations (e.g., pluralization).
+inflection==0.5.1
+
+# MySQL database driver for Django.
+mysqlclient==2.2.7
+
+# Core utilities for Python packages.
+packaging==26.0
+
+# A Python implementation of JSON Web Tokens.
+PyJWT==2.10.1
+
+# World timezone definitions for Python.
+pytz==2025.2
+
+# A YAML parser and emitter for Python.
+PyYAML==6.0.3
+
+# A non-validating SQL parser for Python.
+sqlparse==0.5.5
+
+# Time zone database for pytz.
+tzdata==2025.3
+
+# Implementation of RFC 6570 URI Templates.
+uritemplate==4.2.0
+
+# Environment variable support for Django
+python-decouple==3.8
