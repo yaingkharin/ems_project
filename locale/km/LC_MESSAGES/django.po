@@ -1,0 +1,393 @@
+# Khmer translations for Event Management System
+# This file contains translations for all user-facing strings
+# 
+# Copyright (C) 2024 Event Management System
+# This file is distributed under the same license as the ems_project package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ems_project 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 00:00+0000\n"
+"PO-Revision-Date: 2024-01-01 00:00+0000\n"
+"Last-Translator: EMS Team <team@ems.com>\n"
+"Language-Team: Khmer <km@li.org>\n"
+"Language: km\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# Event Model Translations
+#: app/models/event.py
+msgid "Event"
+msgstr "ព្រឹត្តិការណ៍"
+
+#: app/models/event.py
+msgid "Events"
+msgstr "ព្រឹត្តិការណ៍"
+
+#: app/models/event.py
+msgid "Event Name"
+msgstr "ឈ្មោះព្រឹត្តិការណ៍"
+
+#: app/models/event.py
+msgid "Description"
+msgstr "ការពិពណ៌នា"
+
+#: app/models/event.py
+msgid "Location"
+msgstr "ទីតាំង"
+
+#: app/models/event.py
+msgid "Event Date"
+msgstr "កាលបរិច្ឆេទព្រឹត្តិការណ៍"
+
+#: app/models/event.py
+msgid "Start Time"
+msgstr "ម៉ោងចាប់ផ្តើម"
+
+#: app/models/event.py
+msgid "End Time"
+msgstr "ម៉ោងបញ្ចប់"
+
+#: app/models/event.py
+msgid "Organizer"
+msgstr "អ្នករៀបចំ"
+
+#: app/models/event.py
+msgid "Category"
+msgstr "ប្រភេទ"
+
+#: app/models/event.py
+msgid "Venue"
+msgstr "កន្លែងធ្វើព្រឹត្តិការណ៍"
+
+#: app/models/event.py
+msgid "Status"
+msgstr "ស្ថានភាព"
+
+#: app/models/event.py
+msgid "Created At"
+msgstr "បង្កើតនៅ"
+
+#: app/models/event.py
+msgid "Updated At"
+msgstr "ធ្វើបច្ចុប្បន្នភាពនៅ"
+
+#: app/models/event.py
+msgid "Planned"
+msgstr "គម្រោង"
+
+#: app/models/event.py
+msgid "Ongoing"
+msgstr "កំពុងដំណើរការ"
+
+#: app/models/event.py
+msgid "Completed"
+msgstr "បានបញ្ចប់"
+
+# Event Service Business Logic Messages
+#: app/services/event_service.py
+msgid "%(field)s is required"
+msgstr "%(field)s តម្រូវបានទាមទារ"
+
+#: app/services/event_service.py
+msgid "Invalid category_id"
+msgstr "លេខកូដប្រភេទមិនត្រឹមត្រូវ"
+
+#: app/services/event_service.py
+msgid "Invalid venue_id"
+msgstr "លេខកូដកន្លែងធ្វើព្រឹត្តិការណ៍មិនត្រឹមត្រូវ"
+
+# Event API Response Messages
+#: app/views/event_views.py
+msgid "Events retrieved successfully."
+msgstr "ទាញយកព្រឹត្តិការណ៍ដោយជោគជ័យ។"
+
+#: app/views/event_views.py
+msgid "Event created successfully."
+msgstr "បង្កើតព្រឹត្តិការណ៍ដោយជោគជ័យ។"
+
+#: app/views/event_views.py
+msgid "Event retrieved successfully."
+msgstr "ទាញយកព្រឹត្តិការណ៍ដោយជោគជ័យ។"
+
+#: app/views/event_views.py
+msgid "Event updated successfully."
+msgstr "ធ្វើបច្ចុប្បន្នភាពព្រឹត្តិការណ៍ដោយជោគជ័យ។"
+
+#: app/views/event_views.py
+msgid "Event deleted successfully."
+msgstr "លុបព្រឹត្តិការណ៍ដោយជោគជ័យ។"
+
+#: app/views/event_views.py
+msgid "Event not found."
+msgstr "រកមិនឃើញព្រឹត្តិការណ៍។"
+
+#: app/views/event_views.py
+msgid "Paginated Events retrieved successfully."
+msgstr "ទាញយកព្រឹត្តិការណ៍ដែលបានចែកទំព័រដោយជោគជ័យ។"
+
+# Booking Module Messages
+msgid "Booking created successfully."
+msgstr "បង្កើតការកក់ដោយជោគជ័យ។"
+
+msgid "Booking updated successfully."
+msgstr "ធ្វើបច្ចុប្បន្នភាពការកក់ដោយជោគជ័យ។"
+
+msgid "Booking cancelled successfully."
+msgstr "បោះបង់ការកក់ដោយជោគជ័យ។"
+
+msgid "Booking confirmed successfully."
+msgstr "បញ្ជាក់ការកក់ដោយជោគជ័យ។"
+
+msgid "Booking not found."
+msgstr "រកមិនឃើញការកក់។"
+
+msgid "Event is fully booked."
+msgstr "ព្រឹត្តិការណ៍ត្រូវបានកក់ពេញហើយ។"
+
+msgid "Booking deadline has passed."
+msgstr "ម៉ោងបញ្ចប់ការកក់បានផុតហើយ។"
+
+msgid "Invalid number of tickets."
+msgstr "ចំនួនសំបុត្រមិនត្រឹមត្រូវ។"
+
+# Ticket Module Messages
+msgid "Ticket generated successfully."
+msgstr "បង្កើតសំបុត្រដោយជោគជ័យ។"
+
+msgid "Ticket validated successfully."
+msgstr "ធ្វើបច្ចុប្បន្នភាពសំបុត្រដោយជោគជ័យ។"
+
+msgid "Ticket cancelled successfully."
+msgstr "បោះបង់សំបុត្រដោយជោគជ័យ។"
+
+msgid "Ticket not found."
+msgstr "រកមិនឃើញសំបុត្រ។"
+
+msgid "Ticket already used."
+msgstr "សំបុត្រត្រូវបានប្រើរួចហើយ។"
+
+msgid "Ticket expired."
+msgstr "សំបុត្រផុតកំណត់ហើយ។"
+
+msgid "Invalid ticket code."
+msgstr "លេខកូដសំបុត្រមិនត្រឹមត្រូវ។"
+
+# User/Auth Messages
+msgid "Login successful."
+msgstr "ចូលប្រព័ន្ធដោយជោគជ័យ។"
+
+msgid "Logout successful."
+msgstr "ចាកចេញពីប្រព័ន្ធដោយជោគជ័យ។"
+
+msgid "Registration successful."
+msgstr "ចុះឈ្មោះដោយជោគជ័យ។"
+
+msgid "Password reset successful."
+msgstr "កំណត់ពាក្យសម្ងាត់ឡើងវិញដោយជោគជ័យ។"
+
+msgid "Invalid credentials."
+msgstr "ព័ត៌មានផ្ទៀងផ្ទាត់មិនត្រឹមត្រូវ។"
+
+msgid "User not found."
+msgstr "រកមិនឃើញអ្នកប្រើប្រាស់។"
+
+msgid "Email already exists."
+msgstr "អ៊ីមែលមានរួចហើយ។"
+
+msgid "Password does not meet requirements."
+msgstr "ពាក្យសម្ងាត់មិនត្រូវតាមតម្រូវការ។"
+
+msgid "Account activated successfully."
+msgstr "ធ្វើឱ្យគណនីសកម្មភាពដោយជោគជ័យ។"
+
+msgid "Account deactivated successfully."
+msgstr "បញ្ឈប់គណនីដោយជោគជ័យ។"
+
+# Common API Response Messages
+msgid "Created"
+msgstr "បានបង្កើត"
+
+msgid "Updated"
+msgstr "បានធ្វើបច្ចុប្បន្នភាព"
+
+msgid "Deleted"
+msgstr "បានលុប"
+
+msgid "Not Found"
+msgstr "រកមិនឃើញ"
+
+msgid "Permission denied"
+msgstr "បដិសេធការអនុញ្ញាត"
+
+msgid "Bad Request"
+msgstr "សំណើមិនល្អ"
+
+msgid "Unauthorized"
+msgstr "មិនមានសិទ្ធិ"
+
+msgid "Forbidden"
+msgstr "ត្រូវបានហាមឃាត់"
+
+msgid "Internal Server Error"
+msgstr "កំហុសម៉ាស៊ីនមេខាងក្នុង"
+
+msgid "Service Unavailable"
+msgstr "សេវាកម្មមិនអាចប្រើបាន"
+
+msgid "Validation Error"
+msgstr "កំហុសការផ្ទៀងផ្ទាត់"
+
+msgid "Operation successful"
+msgstr "ប្រតិបត្តិការជោគជ័យ"
+
+msgid "Operation failed"
+msgstr "ប្រតិបត្តិការបរាជ័យ"
+
+# Pagination Messages
+msgid "Page %(page)s of %(total_pages)s"
+msgstr "ទំព័រ %(page)s នៃ %(total_pages)s"
+
+msgid "Showing %(start)s to %(end)s of %(total)s results"
+msgstr "បង្ហាញពី %(start)s ដល់ %(end)s នៃ %(total)s លទ្ធផល"
+
+msgid "No results found"
+msgstr "រកមិនឃើញលទ្ធផល"
+
+msgid "Previous page"
+msgstr "ទំព័រមុន"
+
+msgid "Next page"
+msgstr "ទំព័របន្ទាប់"
+
+# Common Field Names
+msgid "ID"
+msgstr "លេខសម្គាល់"
+
+msgid "Name"
+msgstr "ឈ្មោះ"
+
+msgid "Email"
+msgstr "អ៊ីមែល"
+
+msgid "Phone"
+msgstr "ទូរស័ព្ទ"
+
+msgid "Address"
+msgstr "អាសយដ្ឋាន"
+
+msgid "Date"
+msgstr "កាលបរិច្ឆេទ"
+
+msgid "Time"
+msgstr "ម៉ោង"
+
+msgid "Price"
+msgstr "តម្លៃ"
+
+msgid "Quantity"
+msgstr "បរិមាណ"
+
+msgid "Status"
+msgstr "ស្ថានភាព"
+
+msgid "Active"
+msgstr "សកម្ម"
+
+msgid "Inactive"
+msgstr "អសកម្ម"
+
+msgid "Enabled"
+msgstr "បានបើក"
+
+msgid "Disabled"
+msgstr "បានបិទ"
+
+# Common Actions
+msgid "Create"
+msgstr "បង្កើត"
+
+msgid "Update"
+msgstr "ធ្វើបច្ចុប្បន្នភាព"
+
+msgid "Delete"
+msgstr "លុប"
+
+msgid "View"
+msgstr "មើល"
+
+msgid "Edit"
+msgstr "កែសម្រួល"
+
+msgid "Save"
+msgstr "រក្សាទុក"
+
+msgid "Cancel"
+msgstr "បោះបង់"
+
+msgid "Submit"
+msgstr "ដាក់ស្នើ"
+
+msgid "Search"
+msgstr "ស្វែងរក"
+
+msgid "Filter"
+msgstr "ចម្រោះ"
+
+msgid "Sort"
+msgstr "តម្រៀប"
+
+msgid "Export"
+msgstr "នាំចេញ"
+
+msgid "Import"
+msgstr "នាំចូល"
+
+msgid "Print"
+msgstr "បោះពុម្ព"
+
+msgid "Download"
+msgstr "ទាញយក"
+
+msgid "Upload"
+msgstr "ផ្ទុកឡើង"
+
+# Time and Date
+msgid "Today"
+msgstr "ថ្ងៃនេះ"
+
+msgid "Yesterday"
+msgstr "ម្សិលមិញ"
+
+msgid "Tomorrow"
+msgstr "ថ្ងៃស្អែក"
+
+msgid "This week"
+msgstr "សប្តាហ៍នេះ"
+
+msgid "Last week"
+msgstr "សប្តាហ៍មុន"
+
+msgid "Next week"
+msgstr "សប្តាហ៍ក្រោយ"
+
+msgid "This month"
+msgstr "ខែនេះ"
+
+msgid "Last month"
+msgstr "ខែមុន"
+
+msgid "Next month"
+msgstr "ខែក្រោយ"
+
+msgid "This year"
+msgstr "ឆ្នាំនេះ"
+
+msgid "Last year"
+msgstr "ឆ្នាំមុន"
+
+msgid "Next year"
+msgstr "ឆ្នាំក្រោយ"

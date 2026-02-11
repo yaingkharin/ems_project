@@ -2,6 +2,7 @@ from typing import List, Optional
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
+from django.utils.translation import gettext as _
 from app.models.event import Event
 from app.models.category import Category
 from app.models.venue import Venue
@@ -26,18 +27,18 @@ class EventService:
         # Validate required fields
         for field in required_fields:
             if field not in request_data:
-                raise ValidationError(f"{field} is required")
+                raise ValidationError(_("%(field)s is required") % {"field": field})
 
         # Get Category & Venue safely
         try:
             category = Category.objects.get(id=request_data.pop("category_id"))
         except Category.DoesNotExist:
-            raise ValidationError("Invalid category_id")
+            raise ValidationError(_("Invalid category_id"))
 
         try:
             venue = Venue.objects.get(venue_id=request_data.pop("venue_id"))
         except Venue.DoesNotExist:
-            raise ValidationError("Invalid venue_id")
+            raise ValidationError(_("Invalid venue_id"))
 
         # Create Event
         event = Event.objects.create(
@@ -77,12 +78,12 @@ class EventService:
                 try:
                     event.category = Category.objects.get(id=request_data.pop('category_id'))
                 except Category.DoesNotExist:
-                    raise ValidationError("Invalid category_id")
+                    raise ValidationError(_("Invalid category_id"))
             if 'venue_id' in request_data:
                 try:
                     event.venue = Venue.objects.get(venue_id=request_data.pop('venue_id'))
                 except Venue.DoesNotExist:
-                    raise ValidationError("Invalid venue_id")
+                    raise ValidationError(_("Invalid venue_id"))
 
             # Update other fields
             for key, value in request_data.items():

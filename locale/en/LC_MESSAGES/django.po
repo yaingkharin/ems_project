@@ -1,0 +1,392 @@
+# English translations for Event Management System
+# This file contains translations for all user-facing strings
+# 
+# Copyright (C) 2024 Event Management System
+# This file is distributed under the same license as the ems_project package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ems_project 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 00:00+0000\n"
+"PO-Revision-Date: 2024-01-01 00:00+0000\n"
+"Last-Translator: EMS Team <team@ems.com>\n"
+"Language-Team: English <en@li.org>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# Event Model Translations
+#: app/models/event.py
+msgid "Event"
+msgstr "Event"
+
+#: app/models/event.py
+msgid "Events"
+msgstr "Events"
+
+#: app/models/event.py
+msgid "Event Name"
+msgstr "Event Name"
+
+#: app/models/event.py
+msgid "Description"
+msgstr "Description"
+
+#: app/models/event.py
+msgid "Location"
+msgstr "Location"
+
+#: app/models/event.py
+msgid "Event Date"
+msgstr "Event Date"
+
+#: app/models/event.py
+msgid "Start Time"
+msgstr "Start Time"
+
+#: app/models/event.py
+msgid "End Time"
+msgstr "End Time"
+
+#: app/models/event.py
+msgid "Organizer"
+msgstr "Organizer"
+
+#: app/models/event.py
+msgid "Category"
+msgstr "Category"
+
+#: app/models/event.py
+msgid "Venue"
+msgstr "Venue"
+
+#: app/models/event.py
+msgid "Status"
+msgstr "Status"
+
+#: app/models/event.py
+msgid "Created At"
+msgstr "Created At"
+
+#: app/models/event.py
+msgid "Updated At"
+msgstr "Updated At"
+
+#: app/models/event.py
+msgid "Planned"
+msgstr "Planned"
+
+#: app/models/event.py
+msgid "Ongoing"
+msgstr "Ongoing"
+
+#: app/models/event.py
+msgid "Completed"
+msgstr "Completed"
+
+# Event Service Business Logic Messages
+#: app/services/event_service.py
+msgid "%(field)s is required"
+msgstr "%(field)s is required"
+
+#: app/services/event_service.py
+msgid "Invalid category_id"
+msgstr "Invalid category ID"
+
+#: app/services/event_service.py
+msgid "Invalid venue_id"
+msgstr "Invalid venue ID"
+
+# Event API Response Messages
+#: app/views/event_views.py
+msgid "Events retrieved successfully."
+msgstr "Events retrieved successfully."
+
+#: app/views/event_views.py
+msgid "Event created successfully."
+msgstr "Event created successfully."
+
+#: app/views/event_views.py
+msgid "Event retrieved successfully."
+msgstr "Event retrieved successfully."
+
+#: app/views/event_views.py
+msgid "Event updated successfully."
+msgstr "Event updated successfully."
+
+#: app/views/event_views.py
+msgid "Event deleted successfully."
+msgstr "Event deleted successfully."
+
+#: app/views/event_views.py
+msgid "Event not found."
+msgstr "Event not found."
+
+#: app/views/event_views.py
+msgid "Paginated Events retrieved successfully."
+msgstr "Paginated Events retrieved successfully."
+
+# Booking Module Messages
+msgid "Booking created successfully."
+msgstr "Booking created successfully."
+
+msgid "Booking updated successfully."
+msgstr "Booking updated successfully."
+
+msgid "Booking cancelled successfully."
+msgstr "Booking cancelled successfully."
+
+msgid "Booking confirmed successfully."
+msgstr "Booking confirmed successfully."
+
+msgid "Booking not found."
+msgstr "Booking not found."
+
+msgid "Event is fully booked."
+msgstr "Event is fully booked."
+
+msgid "Booking deadline has passed."
+msgstr "Booking deadline has passed."
+
+msgid "Invalid number of tickets."
+msgstr "Invalid number of tickets."
+
+# Ticket Module Messages
+msgid "Ticket generated successfully."
+msgstr "Ticket generated successfully."
+
+msgid "Ticket validated successfully."
+msgstr "Ticket validated successfully."
+
+msgid "Ticket cancelled successfully."
+msgstr "Ticket cancelled successfully."
+
+msgid "Ticket not found."
+msgstr "Ticket not found."
+
+msgid "Ticket already used."
+msgstr "Ticket already used."
+
+msgid "Ticket expired."
+msgstr "Ticket expired"
+
+msgid "Invalid ticket code."
+msgstr "Invalid ticket code."
+
+# User/Auth Messages
+msgid "Login successful."
+msgstr "Login successful."
+
+msgid "Logout successful."
+msgstr "Logout successful."
+
+msgid "Registration successful."
+msgstr "Registration successful."
+
+msgid "Password reset successful."
+msgstr "Password reset successful."
+
+msgid "Invalid credentials."
+msgstr "Invalid credentials."
+
+msgid "User not found."
+msgstr "User not found."
+
+msgid "Email already exists."
+msgstr "Email already exists."
+
+msgid "Password does not meet requirements."
+msgstr "Password does not meet requirements."
+
+msgid "Account activated successfully."
+msgstr "Account activated successfully."
+
+msgid "Account deactivated successfully."
+msgstr "Account deactivated successfully."
+
+# Common API Response Messages
+msgid "Created"
+msgstr "Created"
+
+msgid "Updated"
+msgstr "Updated"
+
+msgid "Deleted"
+msgstr "Deleted"
+
+msgid "Not Found"
+msgstr "Not Found"
+
+msgid "Permission denied"
+msgstr "Permission denied"
+
+msgid "Bad Request"
+msgstr "Bad Request"
+
+msgid "Unauthorized"
+msgstr "Unauthorized"
+
+msgid "Forbidden"
+msgstr "Forbidden"
+
+msgid "Internal Server Error"
+msgstr "Internal Server Error"
+
+msgid "Service Unavailable"
+msgstr "Service Unavailable"
+
+msgid "Validation Error"
+msgstr "Validation Error"
+
+msgid "Operation successful"
+msgstr "Operation successful"
+
+msgid "Operation failed"
+msgstr "Operation failed"
+
+# Pagination Messages
+msgid "Page %(page)s of %(total_pages)s"
+msgstr "Page %(page)s of %(total_pages)s"
+
+msgid "Showing %(start)s to %(end)s of %(total)s results"
+msgstr "Showing %(start)s to %(end)s of %(total)s results"
+
+msgid "No results found"
+msgstr "No results found"
+
+msgid "Previous page"
+msgstr "Previous page"
+
+msgid "Next page"
+msgstr "Next page"
+
+# Common Field Names
+msgid "ID"
+msgstr "ID"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Phone"
+msgstr "Phone"
+
+msgid "Address"
+msgstr "Address"
+
+msgid "Date"
+msgstr "Date"
+
+msgid "Time"
+msgstr "Time"
+
+msgid "Price"
+msgstr "Price"
+
+msgid "Quantity"
+msgstr "Quantity"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Active"
+msgstr "Active"
+
+msgid "Inactive"
+msgstr "Inactive"
+
+msgid "Enabled"
+msgstr "Enabled"
+
+msgid "Disabled"
+msgstr "Disabled"
+
+# Common Actions
+msgid "Create"
+msgstr "Create"
+
+msgid "Update"
+msgstr "Update"
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "View"
+msgstr "View"
+
+msgid "Edit"
+msgstr "Edit"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "Submit"
+msgstr "Submit"
+
+msgid "Search"
+msgstr "Search"
+
+msgid "Filter"
+msgstr "Filter"
+
+msgid "Sort"
+msgstr "Sort"
+
+msgid "Export"
+msgstr "Export"
+
+msgid "Import"
+msgstr "Import"
+
+msgid "Print"
+msgstr "Print"
+
+msgid "Download"
+msgstr "Download"
+
+msgid "Upload"
+msgstr "Upload"
+
+# Time and Date
+msgid "Today"
+msgstr "Today"
+
+msgid "Yesterday"
+msgstr "Yesterday"
+
+msgid "Tomorrow"
+msgstr "Tomorrow"
+
+msgid "This week"
+msgstr "This week"
+
+msgid "Last week"
+msgstr "Last week"
+
+msgid "Next week"
+msgstr "Next week"
+
+msgid "This month"
+msgstr "This month"
+
+msgid "Last month"
+msgstr "Last month"
+
+msgid "Next month"
+msgstr "Next month"
+
+msgid "This year"
+msgstr "This year"
+
+msgid "Last year"
+msgstr "Last year"
+
+msgid "Next year"
+msgstr "Next year"

@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from django.utils.translation import gettext as _
 
 from app.dto.requests.event_request import CreateEventRequest, UpdateEventRequest
 from app.dto.responses.event_response import EventResponse
@@ -31,7 +32,7 @@ class EventListCreateView(APIView):
     def get(self, request):
         all_events = EventService.get_all_events()
         serializer = EventResponse(all_events, many=True)
-        return api_response(data=serializer.data, message="Events retrieved successfully.")
+        return api_response(data=serializer.data, message=_("Events retrieved successfully."))
 
     @swagger_auto_schema(
         operation_description="Create a new event.",
@@ -51,7 +52,7 @@ class EventListCreateView(APIView):
             response_serializer = EventResponse(event)
             return api_response(
                 data=response_serializer.data,
-                message="Event created successfully.",
+                message=_("Event created successfully."),
                 status_code=status.HTTP_201_CREATED
             )
         except Exception as e:
@@ -80,8 +81,8 @@ class EventRetrieveUpdateDestroyView(APIView):
         event = EventService.get_event_by_id(pk)
         if event:
             serializer = EventResponse(event)
-            return api_response(data=serializer.data, message="Event retrieved successfully.")
-        return api_response(message="Event not found.", success=False, status_code=status.HTTP_404_NOT_FOUND)
+            return api_response(data=serializer.data, message=_("Event retrieved successfully."))
+        return api_response(message=_("Event not found."), success=False, status_code=status.HTTP_404_NOT_FOUND)
 
     @swagger_auto_schema(
         operation_description="Update an existing event.",
@@ -100,8 +101,8 @@ class EventRetrieveUpdateDestroyView(APIView):
         event = EventService.update_event(pk, validated_data)
         if event:
             response_serializer = EventResponse(event)
-            return api_response(data=response_serializer.data, message="Event updated successfully.")
-        return api_response(message="Event not found.", success=False, status_code=status.HTTP_404_NOT_FOUND)
+            return api_response(data=response_serializer.data, message=_("Event updated successfully."))
+        return api_response(message=_("Event not found."), success=False, status_code=status.HTTP_404_NOT_FOUND)
 
     @swagger_auto_schema(
         operation_description="Delete a event by ID.",
@@ -112,8 +113,8 @@ class EventRetrieveUpdateDestroyView(APIView):
     )
     def delete(self, request, pk):
         if EventService.delete_event(pk):
-            return api_response(message="Event deleted successfully.", status_code=status.HTTP_204_NO_CONTENT)
-        return api_response(message="Event not found.", success=False, status_code=status.HTTP_404_NOT_FOUND)
+            return api_response(message=_("Event deleted successfully."), status_code=status.HTTP_204_NO_CONTENT)
+        return api_response(message=_("Event not found."), success=False, status_code=status.HTTP_404_NOT_FOUND)
 
 
 class PaginatedEventListView(APIView):
@@ -159,7 +160,7 @@ class PaginatedEventListView(APIView):
             paginated_data = EventService.get_paginated_events(validated_data)
             return api_response(
                 data=paginated_data,
-                message="Paginated Events retrieved successfully."
+                message=_("Paginated Events retrieved successfully.")
             )
         except Exception as e:
             return api_response(
