@@ -1,6 +1,7 @@
 from typing import Dict, Any
 from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 from app.models.invoice import Invoice
 from app.models.booking import Booking
 from app.models.user import User
@@ -99,11 +100,26 @@ class InvoiceService:
     @staticmethod
     @transaction.atomic
     def delete_invoice(pk: int):
-        """Delete the invoice and return True on success, False if not found."""
+        """Soft delete the invoice and return True on success, False if not found."""
         invoice = InvoiceService.get_invoice_by_id(pk)
         if not invoice:
             return False
-        invoice.delete()
+        invoice.is_deleted = True
+        invoice.deleted_at = timezone.now()
+        invoice.save()
+        return True
+
+    @staticmethod
+    @transaction.atomic
+    def force_delete_invoice(pk: int):
+        """
+        Permanently delete an invoice from the database.
+        Use with caution - this action cannot be undone.
+        """
+        invoice = InvoiceService.get_invoice_by_id(pk)
+        if not invoice:
+            return False
+        invoice.delete()  # Hard delete
         return True
 
     @staticmethod

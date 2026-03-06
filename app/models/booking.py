@@ -1,8 +1,13 @@
 from django.db import models
+from django.utils import timezone
 from app.models.user import User
 from app.models.event import Event
 from app.models.ticket import Ticket
 
+
+class BookingManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(is_deleted=False)
 
 class Booking(models.Model):
     """
@@ -14,6 +19,10 @@ class Booking(models.Model):
         ('cancelled', 'Cancelled'),
     ]
 
+    # Custom managers for soft delete
+    objects = BookingManager() # Active bookings only
+    all_objects = models.Manager() # All bookings including deleted
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookings')
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='bookings')
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name='bookings')
@@ -21,6 +30,8 @@ class Booking(models.Model):
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     booking_date = models.DateTimeField(auto_now_add=True)
+    is_deleted = models.BooleanField(default=False)
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

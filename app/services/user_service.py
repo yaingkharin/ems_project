@@ -3,6 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
+from django.utils import timezone
 from app.models.role import Role
 
 from app.dto.responses.user_response import UserResponse
@@ -65,7 +66,22 @@ class UserService:
     def delete_user(user_id: int) -> bool:
         try:
             user = User.objects.get(id=user_id)
-            user.delete()
+            user.is_deleted = True
+            user.deleted_at = timezone.now()
+            user.save()
+            return True
+        except ObjectDoesNotExist:
+            return False
+
+    @staticmethod
+    def force_delete_user(user_id: int) -> bool:
+        """
+        Permanently delete a user from the database.
+        Use with caution - this action cannot be undone.
+        """
+        try:
+            user = User.all_objects.get(id=user_id)  # Include deleted users
+            user.delete()  # Hard delete
             return True
         except ObjectDoesNotExist:
             return False

@@ -2,6 +2,7 @@ from typing import Dict, Any
 from django.db import transaction
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 from app.models.booking import Booking
 from app.models.user import User
 from app.models.event import Event
@@ -94,11 +95,31 @@ class BookingService:
         booking = BookingService.get_booking_by_id(pk)
         if not booking:
             return False
-        # Rollback ticket sold count
+        # Soft delete instead of hard delete
+        booking.is_deleted = True
+        booking.deleted_at = timezone.now()
+        booking.save()
+        # Rollback ticket sold count for soft deleted booking
         if booking.ticket:
             booking.ticket.sold = max(0, booking.ticket.sold - booking.quantity)
             booking.ticket.save()
-        booking.delete()
+        return True
+
+    @staticmethod
+    @transaction.atomic
+    def force_delete_booking(pk: int):
+        """
+        Permanently delete a booking from the database.
+        Use with caution - this action cannot be undone.
+        """
+        booking = BookingService.get_booking_by_id(pk)
+        if not booking:
+            return False
+        # Rollback ticket sold count before hard delete
+        if booking.ticket:
+            booking.ticket.sold = max(0, booking.ticket.sold - booking.quantity)
+            booking.ticket.save()
+        booking.delete()  # Hard delete
         return True
 
     @staticmethod

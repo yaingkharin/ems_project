@@ -2,6 +2,7 @@ from typing import List, Optional
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
+from django.utils import timezone
 from app.models.event import Event
 from app.models.category import Category
 from app.models.venue import Venue
@@ -96,11 +97,26 @@ class EventService:
     @staticmethod
     def delete_event(event_id: int) -> bool:
         """
-        Deletes an event by its ID.
+        Soft deletes an event by its ID.
         """
         try:
             event = Event.objects.get(id=event_id)
-            event.delete()
+            event.is_deleted = True
+            event.deleted_at = timezone.now()
+            event.save()
+            return True
+        except ObjectDoesNotExist:
+            return False
+
+    @staticmethod
+    def force_delete_event(event_id: int) -> bool:
+        """
+        Permanently delete an event from the database.
+        Use with caution - this action cannot be undone.
+        """
+        try:
+            event = Event.objects.get(id=event_id)
+            event.delete()  # Hard delete
             return True
         except ObjectDoesNotExist:
             return False

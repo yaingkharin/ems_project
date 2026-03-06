@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from app.models.user import User
 
 
@@ -11,6 +12,8 @@ class UserProfile(models.Model):
     dob = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=50, blank=True, null=True)
     preferences = models.TextField(blank=True, null=True)
+    is_deleted = models.BooleanField(default=False)
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

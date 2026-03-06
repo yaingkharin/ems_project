@@ -2,6 +2,7 @@ from typing import List, Optional
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
+from django.utils import timezone
 from app.models.checkin import Checkin
 from app.models.booking import Booking
 from app.dto.responses.checkin_response import CheckinResponse
@@ -63,11 +64,26 @@ class CheckinService:
     @staticmethod
     def delete_checkin(checkin_id: int) -> bool:
         """
-        Deletes a check-in by its ID.
+        Soft deletes a check-in by its ID.
         """
         try:
             checkin = Checkin.objects.get(id=checkin_id)
-            checkin.delete()
+            checkin.is_deleted = True
+            checkin.deleted_at = timezone.now()
+            checkin.save()
+            return True
+        except ObjectDoesNotExist:
+            return False
+
+    @staticmethod
+    def force_delete_checkin(checkin_id: int) -> bool:
+        """
+        Permanently delete a check-in from the database.
+        Use with caution - this action cannot be undone.
+        """
+        try:
+            checkin = Checkin.objects.get(id=checkin_id)
+            checkin.delete()  # Hard delete
             return True
         except ObjectDoesNotExist:
             return False

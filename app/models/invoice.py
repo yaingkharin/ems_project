@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from app.models.booking import Booking
 from app.models.user import User
 
@@ -14,6 +15,8 @@ class Invoice(models.Model):
     payment_method = models.CharField(max_length=255)
     issue_date = models.DateTimeField(auto_now_add=True)
     qr_code = models.TextField(blank=True, null=True)
+    is_deleted = models.BooleanField(default=False)
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

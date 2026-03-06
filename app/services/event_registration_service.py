@@ -1,6 +1,7 @@
 from typing import Dict, Any
 from django.db import transaction, IntegrityError
 from django.db.models import Q
+from django.utils import timezone
 from app.models.event_registration import EventRegistration
 from app.models.user import User
 from app.models.event import Event
@@ -67,7 +68,23 @@ class EventRegistrationService:
         reg = EventRegistrationService.get_event_registration_by_id(pk)
         if not reg:
             return False
-        reg.delete()
+        # Soft delete instead of hard delete
+        reg.is_deleted = True
+        reg.deleted_at = timezone.now()
+        reg.save()
+        return True
+
+    @staticmethod
+    @transaction.atomic
+    def force_delete_event_registration(pk: int):
+        """
+        Permanently delete an event registration from the database.
+        Use with caution - this action cannot be undone.
+        """
+        reg = EventRegistrationService.get_event_registration_by_id(pk)
+        if not reg:
+            return False
+        reg.delete()  # Hard delete
         return True
 
     @staticmethod

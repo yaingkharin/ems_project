@@ -2,7 +2,7 @@ from typing import List, Optional
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
-
+from django.utils import timezone
 from app.models.image import Image
 from app.dto.responses.image_response import ImageResponse
 
@@ -40,7 +40,22 @@ class ImageService:
     def delete_image(image_id: int) -> bool:
         try:
             image = Image.objects.get(id=image_id)
-            image.delete()
+            image.is_deleted = True
+            image.deleted_at = timezone.now()
+            image.save()
+            return True
+        except ObjectDoesNotExist:
+            return False
+
+    @staticmethod
+    def force_delete_image(image_id: int) -> bool:
+        """
+        Permanently delete an image from the database.
+        Use with caution - this action cannot be undone.
+        """
+        try:
+            image = Image.objects.get(id=image_id)
+            image.delete()  # Hard delete
             return True
         except ObjectDoesNotExist:
             return False

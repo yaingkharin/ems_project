@@ -2,8 +2,8 @@ from typing import List, Optional
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
+from django.utils import timezone
 from app.models.user_profile import UserProfile
-from app.models.user import User
 from app.dto.responses.user_profile_response import UserProfileResponse
 
 
@@ -74,11 +74,26 @@ class UserProfileService:
     @staticmethod
     def delete_user_profile(profile_id: int) -> bool:
         """
-        Deletes a user profile by its ID.
+        Soft deletes a user profile by its ID.
         """
         try:
             profile = UserProfile.objects.get(id=profile_id)
-            profile.delete()
+            profile.is_deleted = True
+            profile.deleted_at = timezone.now()
+            profile.save()
+            return True
+        except ObjectDoesNotExist:
+            return False
+
+    @staticmethod
+    def force_delete_user_profile(profile_id: int) -> bool:
+        """
+        Permanently delete a user profile from the database.
+        Use with caution - this action cannot be undone.
+        """
+        try:
+            profile = UserProfile.objects.get(id=profile_id)
+            profile.delete()  # Hard delete
             return True
         except ObjectDoesNotExist:
             return False

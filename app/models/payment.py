@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from app.models.booking import Booking
 
 
@@ -18,6 +19,8 @@ class Payment(models.Model):
     transaction_ref = models.CharField(max_length=255, null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     payment_date = models.DateTimeField(auto_now_add=True)
+    is_deleted = models.BooleanField(default=False)
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

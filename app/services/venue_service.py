@@ -3,6 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db import connection
 from django.db.models import Q
+from django.utils import timezone
 from app.models.venue import Venue
 
 from app.dto.responses.venue_response import VenueResponse
@@ -48,7 +49,22 @@ class VenueService:
     def delete_venue(venue_id: int) -> bool:
         try:
             venue = Venue.objects.get(venue_id=venue_id)
-            venue.delete()
+            venue.is_deleted = True
+            venue.deleted_at = timezone.now()
+            venue.save()
+            return True
+        except ObjectDoesNotExist:
+            return False
+
+    @staticmethod
+    def force_delete_venue(venue_id: int) -> bool:
+        """
+        Permanently delete a venue from the database.
+        Use with caution - this action cannot be undone.
+        """
+        try:
+            venue = Venue.objects.get(venue_id=venue_id)
+            venue.delete()  # Hard delete
             return True
         except ObjectDoesNotExist:
             return False

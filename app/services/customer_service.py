@@ -2,7 +2,7 @@ from typing import List, Optional
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
-
+from django.utils import timezone
 from app.models.customer import Customer
 from app.dto.responses.customer_response import CustomerResponse
 
@@ -46,7 +46,22 @@ class CustomerService:
     def delete_customer(customer_id: int) -> bool:
         try:
             customer = Customer.objects.get(id=customer_id)
-            customer.delete()
+            customer.is_deleted = True
+            customer.deleted_at = timezone.now()
+            customer.save()
+            return True
+        except ObjectDoesNotExist:
+            return False
+
+    @staticmethod
+    def force_delete_customer(customer_id: int) -> bool:
+        """
+        Permanently delete a customer from the database.
+        Use with caution - this action cannot be undone.
+        """
+        try:
+            customer = Customer.objects.get(id=customer_id)
+            customer.delete()  # Hard delete
             return True
         except ObjectDoesNotExist:
             return False

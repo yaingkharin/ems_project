@@ -1,10 +1,14 @@
 # api/models/user.py
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
+from django.utils import timezone
 from .role import Role
 from app.utils.bycrypt import hash_password # Added this import
 
 class CustomUserManager(BaseUserManager):
+    def get_queryset(self):
+        return super().get_queryset().filter(is_deleted=False)
+
     def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError('The Email field must be set')
@@ -32,12 +36,15 @@ class User(AbstractUser):
     role = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True, blank=True, related_name='users')
     status = models.CharField(max_length=10 ,default='active')
     password = models.CharField(max_length=255) 
+    is_deleted = models.BooleanField(default=False)
+    deleted_at = models.DateTimeField(null=True, blank=True) 
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
     EMAIL_FIELD = 'email'
 
-    objects = CustomUserManager() # Assign our custom manager
+    objects = CustomUserManager() # Active users only
+    all_objects = models.Manager() # All users including deleted
 
     class Meta:
         db_table = 'users'

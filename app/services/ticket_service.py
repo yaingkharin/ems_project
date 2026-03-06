@@ -2,6 +2,7 @@ from typing import List, Optional
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
+from django.utils import timezone
 from app.models.ticket import Ticket
 from app.models.event import Event
 from app.dto.responses.ticket_response import TicketResponse
@@ -46,7 +47,22 @@ class TicketService:
     def delete_ticket(ticket_id: int) -> bool:
         try:
             ticket = Ticket.objects.get(id=ticket_id)
-            ticket.delete()
+            ticket.is_deleted = True
+            ticket.deleted_at = timezone.now()
+            ticket.save()
+            return True
+        except ObjectDoesNotExist:
+            return False
+
+    @staticmethod
+    def force_delete_ticket(ticket_id: int) -> bool:
+        """
+        Permanently delete a ticket from the database.
+        Use with caution - this action cannot be undone.
+        """
+        try:
+            ticket = Ticket.objects.get(id=ticket_id)
+            ticket.delete()  # Hard delete
             return True
         except ObjectDoesNotExist:
             return False

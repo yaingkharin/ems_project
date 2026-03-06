@@ -2,6 +2,7 @@ from typing import List, Optional
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
+from django.utils import timezone
 from app.models.category import Category
 from app.dto.responses.category_response import CategoryResponse # Fixed import
 
@@ -40,7 +41,22 @@ class CategoryService:
     def delete_category(id: int) -> bool:
         try:
             category = Category.objects.get(id=id)
-            category.delete()
+            category.is_deleted = True
+            category.deleted_at = timezone.now()
+            category.save()
+            return True
+        except ObjectDoesNotExist:
+            return False
+
+    @staticmethod
+    def force_delete_category(id: int) -> bool:
+        """
+        Permanently delete a category from the database.
+        Use with caution - this action cannot be undone.
+        """
+        try:
+            category = Category.objects.get(id=id)
+            category.delete()  # Hard delete
             return True
         except ObjectDoesNotExist:
             return False

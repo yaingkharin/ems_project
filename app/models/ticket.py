@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from app.models.event import Event
 
 
@@ -17,6 +18,8 @@ class Ticket(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.IntegerField(default=0)
     sold = models.IntegerField(default=0)
+    is_deleted = models.BooleanField(default=False)
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
