@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google OAuth Login Test</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #f4f4f9; }
+        .container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
+        #response { margin-top: 20px; text-align: left; background: #eee; padding: 10px; border-radius: 4px; max-width: 500px; word-break: break-all; white-space: pre-wrap; display: none; }
+        .loader { display: none; margin: 10px 0; border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 20px; height: 20px; animation: spin 2s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>EMS Google Login</h1>
+    <p>Use this to test your backend integration</p>
+    
+    <div id="g_id_onload"
+         data-client_id="260201255689-uih9pse0dm9hra3c3pl2e1hiponv0735.apps.googleusercontent.com"
+         data-callback="handleCredentialResponse">
+    </div>
+    <div class="g_id_signin" data-type="standard"></div>
+
+    <div class="loader" id="loader"></div>
+    <div id="response"></div>
+</div>
+
+<script>
+    async function handleCredentialResponse(response) {
+        console.log("Encoded JWT ID token: " + response.credential);
+        
+        const loader = document.getElementById('loader');
+        const responseDiv = document.getElementById('response');
+        
+        loader.style.display = 'block';
+        responseDiv.style.display = 'none';
+
+        try {
+            const apiResponse = await fetch('http://127.0.0.1:8000/api/v1/auth/google/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id_token: response.credential
+                })
+            });
+
+            const data = await apiResponse.json();
+            responseDiv.textContent = JSON.stringify(data, null, 2);
+            responseDiv.style.display = 'block';
+        } catch (error) {
+            responseDiv.textContent = "Error: " + error.message;
+            responseDiv.style.display = 'block';
+        } finally {
+            loader.style.display = 'none';
+        }
+    }
+</script>
+
+</body>
+</html>
