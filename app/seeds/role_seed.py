@@ -1,6 +1,6 @@
-from app.models import Role, Permission, RolePermission
 
 def seed_roles():
+    from app.models import Role, Permission, RolePermission
     # Step 1: Get all available permissions from the database
     all_permissions = Permission.objects.all()
 
@@ -15,7 +15,13 @@ def seed_roles():
             'role_name': 'User',
             'role_display_name': 'Regular User',
             'assigned_permissions': [
-                Permission.objects.get(name='view_users'),  # User can only view users
+                Permission.objects.get(name='view_customers'),
+                Permission.objects.get(name='all_events'),
+                Permission.objects.get(name='all_tickets'),
+                Permission.objects.get(name='all_bookings'),
+                Permission.objects.get(name='create_bookings'),
+                Permission.objects.get(name='all_venues'),
+                Permission.objects.get(name='all_categories'),
             ]
         },
     ]

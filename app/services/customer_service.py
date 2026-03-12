@@ -11,9 +11,11 @@ class CustomerService:
     @staticmethod
     def create_customer(request_data: dict) -> dict:
         customer = Customer.objects.create(
-            username=request_data['username'],
-            gmail=request_data['gmail'],
-            password=request_data['password']
+            first_name=request_data.get('first_name'),
+            last_name=request_data.get('last_name'),
+            email=request_data['email'],
+            picture=request_data.get('picture'),
+            email_verified=request_data.get('email_verified', False)
         )
         return CustomerResponse(customer).data
 
@@ -34,9 +36,11 @@ class CustomerService:
     def update_customer(customer_id: int, request_data: dict) -> Optional[dict]:
         try:
             customer = Customer.objects.get(id=customer_id)
-            customer.username = request_data.get('username', customer.username)
-            customer.gmail = request_data.get('gmail', customer.gmail)
-            customer.password = request_data.get('password', customer.password)
+            customer.first_name = request_data.get('first_name', customer.first_name)
+            customer.last_name = request_data.get('last_name', customer.last_name)
+            customer.email = request_data.get('email', customer.email)
+            customer.picture = request_data.get('picture', customer.picture)
+            customer.status = request_data.get('status', customer.status)
             customer.save()
             return CustomerResponse(customer).data
         except ObjectDoesNotExist:
@@ -54,19 +58,6 @@ class CustomerService:
             return False
 
     @staticmethod
-    def force_delete_customer(customer_id: int) -> bool:
-        """
-        Permanently delete a customer from the database.
-        Use with caution - this action cannot be undone.
-        """
-        try:
-            customer = Customer.objects.get(id=customer_id)
-            customer.delete()  # Hard delete
-            return True
-        except ObjectDoesNotExist:
-            return False
-
-    @staticmethod
     def get_paginated_customers(validated_data: dict) -> dict:
         page = validated_data.get('page', 1)
         limit = validated_data.get('limit', 100)
@@ -78,8 +69,9 @@ class CustomerService:
 
         if search:
             queryset = queryset.filter(
-                Q(username__icontains=search) |
-                Q(gmail__icontains=search)
+                Q(first_name__icontains=search) |
+                Q(last_name__icontains=search) |
+                Q(email__icontains=search)
             )
 
         if sort_order.lower() == 'desc':

@@ -12,6 +12,19 @@ from app.utils.api_response import api_response
 from app.utils.permissions import CheckPermission
 
 
+class CustomerMeView(APIView):
+    permission_classes = [IsAuthenticated, CheckPermission]
+    method_permissions = {
+        'GET': 'view_customers',
+    }
+
+    @swagger_auto_schema(
+        operation_description="Retrieve the current authenticated customer's profile.",
+        responses={200: CustomerResponse, 401: "Unauthorized"}
+    )
+    def get(self, request):
+        serializer = CustomerResponse(request.user)
+        return api_response(data=serializer.data, message="Profile retrieved successfully.")
 class CustomerListCreateView(APIView):
     permission_classes = [IsAuthenticated, CheckPermission]
     method_permissions = {
