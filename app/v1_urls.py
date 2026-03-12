@@ -38,7 +38,6 @@ urlpatterns = [
         path('checkins/', include('app.urls.checkin_urls')),
         path('event-registrations/', include('app.urls.event_registration_urls')),
         path('user-profiles/', include('app.urls.user_profile_urls')),
-        path('images/', include('app.urls.image_urls')),
         path('customers/', include('app.urls.customer_urls')),
     ])),
 
