@@ -7,15 +7,16 @@ from rest_framework import permissions # For DRF permission class
 
 User = get_user_model()
 
-def has_permission(user: User, permission_name: str) -> bool:
+def has_permission(user, permission_name: str) -> bool:
     """
-    Checks if the given user has the specified permission.
+    Checks if the given user (or customer) has the specified permission.
+    Accepts any object that has 'is_authenticated' and 'role' attributes.
     """
     if not user or not user.is_authenticated:
         return False
 
-    # Superusers bypass all permission checks
-    if user.is_superuser:
+    # Superusers bypass all permission checks (only applicable to User model)
+    if getattr(user, 'is_superuser', False):
         return True
     
     if user.role:

@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 # DTO-named serializers
 from app.dto.requests.user_request import CreateUserRequest
@@ -9,6 +10,7 @@ from app.dto.responses.user_response import UserResponse
 from app.dto.requests.auth_request import LoginRequestDTO
 from app.dto.responses.auth_response import LoginResponseDTO
 from app.services.user_service import UserService
+from app.services.authentication_service import AuthenticationService
 from app.utils.jwt import generate_jwt_tokens
 from app.utils.api_response import api_response
 
@@ -111,3 +113,43 @@ class LogoutView(APIView):
             message="Successfully logged out.",
             status_code=status.HTTP_200_OK
         )
+
+class GoogleLoginView(APIView):
+    permission_classes = [AllowAny]
+
+    @swagger_auto_schema(
+        operation_description="Login or Register via Google OAuth.",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'id_token': openapi.Schema(type=openapi.TYPE_STRING, description='Google ID Token')
+            },
+            required=['id_token']
+        ),
+        responses={
+            200: "Login Successful",
+            401: "Authentication Failed"
+        }
+    )
+    def post(self, request):
+        id_token = request.data.get('id_token')
+        if not id_token:
+            return api_response(
+                message="Google id_token is required.",
+                success=False,
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            auth_data = AuthenticationService.google_login(id_token)
+            return api_response(
+                data=auth_data,
+                message="Google login successful.",
+                status_code=status.HTTP_200_OK
+            )
+        except Exception as e:
+            return api_response(
+                message=str(e),
+                success=False,
+                status_code=status.HTTP_401_UNAUTHORIZED
+            )
