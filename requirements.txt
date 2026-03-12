@@ -51,3 +51,9 @@ uritemplate==4.2.0
 
 # Environment variable support for Django
 python-decouple==3.8
+
+# Google Authentication
+google-auth==2.38.0
+
+# HTTP requests library
+requests==2.32.3
