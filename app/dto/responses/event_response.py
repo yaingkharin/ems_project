@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from app.dto.responses.category_response import CategoryResponse
 from app.dto.responses.venue_response import VenueResponse
-from app.dto.responses.image_response import ImageResponse
 
 
 class EventResponse(serializers.ModelSerializer):
@@ -10,7 +9,14 @@ class EventResponse(serializers.ModelSerializer):
     """
     category = CategoryResponse(read_only=True)
     venue = VenueResponse(read_only=True)
-    image = ImageResponse(read_only=True, allow_null=True)
+    image = serializers.SerializerMethodField()
+    start_time = serializers.TimeField(format='%H:%M')
+    end_time = serializers.TimeField(format='%H:%M')
+
+    def get_image(self, obj):
+        if obj.image:
+            return f"uploads/{obj.image}"
+        return None
 
     class Meta:
         from app.models.event import Event

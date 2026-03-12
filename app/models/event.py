@@ -3,7 +3,6 @@ from django.utils import timezone
 
 from app.models.category import Category
 from app.models.venue import Venue
-from app.models.image import Image
 
 
 class Event(models.Model):
@@ -26,7 +25,7 @@ class Event(models.Model):
     organizer = models.CharField(max_length=255)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='events')
     venue = models.ForeignKey(Venue, on_delete=models.CASCADE, related_name='events')
-    image = models.ForeignKey(Image, on_delete=models.SET_NULL, null=True, blank=True, related_name='events')
+    image = models.CharField(max_length=255, null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='upcoming')
     is_deleted = models.BooleanField(default=False)
     deleted_at = models.DateTimeField(null=True, blank=True)

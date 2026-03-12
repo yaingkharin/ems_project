@@ -111,7 +111,7 @@ class EventRetrieveUpdateDestroyView(APIView):
         }
     )
     def delete(self, request, pk):
-        if EventService.delete_event(pk):
+        if EventService.soft_delete_event(pk):
             return api_response(message="Event deleted successfully.", status_code=status.HTTP_204_NO_CONTENT)
         return api_response(message="Event not found.", success=False, status_code=status.HTTP_404_NOT_FOUND)
 

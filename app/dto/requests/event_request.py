@@ -13,7 +13,7 @@ class CreateEventRequest(serializers.Serializer):
     organizer = serializers.CharField(max_length=255)
     category_id = serializers.IntegerField()
     venue_id = serializers.IntegerField()
-    image_id = serializers.IntegerField(required=False, allow_null=True)
+    image = serializers.ImageField(required=False, allow_null=True)
     status = serializers.ChoiceField(choices=['upcoming', 'ongoing', 'completed', 'cancelled'], default='upcoming')
 
 class UpdateEventRequest(serializers.Serializer):
@@ -29,5 +29,5 @@ class UpdateEventRequest(serializers.Serializer):
     organizer = serializers.CharField(max_length=255, required=False)
     category_id = serializers.IntegerField(required=False)
     venue_id = serializers.IntegerField(required=False)
-    image_id = serializers.IntegerField(required=False, allow_null=True)
+    image = serializers.ImageField(required=False, allow_null=True)
     status = serializers.ChoiceField(choices=['upcoming', 'ongoing', 'completed', 'cancelled'], required=False)

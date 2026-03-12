@@ -7,6 +7,7 @@ from app.models.event import Event
 from app.models.category import Category
 from app.models.venue import Venue
 from app.dto.responses.event_response import EventResponse
+from app.utils.helper import Helper
 
 class EventService:
     """
@@ -40,10 +41,26 @@ class EventService:
         except Venue.DoesNotExist:
             raise ValidationError("Invalid venue_id")
 
+        helper = Helper()
+        # Handle Image
+        image_file = request_data.pop("image", None)
+        image_path = None
+        if image_file:
+            image_path = helper.upload_image(image_file)
+
+        # Handle formatting Dates and Times
+        if "event_date" in request_data:
+            request_data["event_date"] = helper.format_to_date(request_data["event_date"])
+        if "start_time" in request_data:
+            request_data["start_time"] = helper.format_to_time(request_data["start_time"])
+        if "end_time" in request_data:
+            request_data["end_time"] = helper.format_to_time(request_data["end_time"])
+
         # Create Event
         event = Event.objects.create(
             category=category,
             venue=venue,
+            image=image_path,
             **request_data
         )
         return event
@@ -85,6 +102,23 @@ class EventService:
                 except Venue.DoesNotExist:
                     raise ValidationError("Invalid venue_id")
 
+            helper = Helper()
+            # Handle Image
+            if 'image' in request_data:
+                image_file = request_data.pop('image')
+                if image_file:
+                    new_image_path = helper.update_image(image_file, event.image)
+                    if new_image_path:
+                        event.image = new_image_path
+
+            # Handle formatting Dates and Times
+            if "event_date" in request_data:
+                request_data["event_date"] = helper.format_to_date(request_data["event_date"])
+            if "start_time" in request_data:
+                request_data["start_time"] = helper.format_to_time(request_data["start_time"])
+            if "end_time" in request_data:
+                request_data["end_time"] = helper.format_to_time(request_data["end_time"])
+
             # Update other fields
             for key, value in request_data.items():
                 setattr(event, key, value)
@@ -95,7 +129,7 @@ class EventService:
             return None
 
     @staticmethod
-    def delete_event(event_id: int) -> bool:
+    def soft_delete_event(event_id: int) -> bool:
         """
         Soft deletes an event by its ID.
         """
