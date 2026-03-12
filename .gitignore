@@ -18,6 +18,9 @@ db.sqlite3
 # Media files
 /media/
 
+# Upload files
+/uploads/
+
 # Environment variables
 .env
 .env.*
