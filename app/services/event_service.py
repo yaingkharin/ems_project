@@ -68,27 +68,27 @@ class EventService:
     @staticmethod
     def get_event_by_id(event_id: int) -> Optional[Event]:
         """
-        Retrieves a single event by its ID.
+        Retrieves a single event by its ID. Excludes soft-deleted events.
         """
         try:
-            return Event.objects.get(id=event_id)
+            return Event.objects.get(id=event_id, is_deleted=False)
         except ObjectDoesNotExist:
             return None
 
     @staticmethod
     def get_all_events() -> List[Event]:
         """
-        Retrieves all events.
+        Retrieves all active events.
         """
-        return Event.objects.all()
+        return Event.objects.filter(is_deleted=False)
 
     @staticmethod
     def update_event(event_id: int, request_data: dict) -> Optional[Event]:
         """
-        Updates an existing event safely.
+        Updates an existing, non-deleted event safely.
         """
         try:
-            event = Event.objects.get(id=event_id)
+            event = Event.objects.get(id=event_id, is_deleted=False)
 
             # Update Category / Venue if provided
             if 'category_id' in request_data:
@@ -129,13 +129,14 @@ class EventService:
             return None
 
     @staticmethod
-    def soft_delete_event(event_id: int) -> bool:
+    def soft_delete_event(event_id: int, user) -> bool:
         """
-        Soft deletes an event by its ID.
+        Soft deletes an event by its ID and tracks who deleted it.
         """
         try:
-            event = Event.objects.get(id=event_id)
+            event = Event.objects.get(id=event_id, is_deleted=False)
             event.is_deleted = True
+            event.deleted_by = user
             event.deleted_at = timezone.now()
             event.save()
             return True
@@ -167,7 +168,7 @@ class EventService:
         search = validated_data.get('search', None)
         filters = validated_data.get('filters', {})
 
-        queryset = Event.objects.all()
+        queryset = Event.objects.filter(is_deleted=False)
 
         if filters:
             queryset = queryset.filter(**filters)

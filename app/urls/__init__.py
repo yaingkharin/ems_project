@@ -13,7 +13,6 @@ from .checkin_urls import urlpatterns as checkin_urls
 from .event_registration_urls import urlpatterns as event_registration_urls
 from .ticket_urls import urlpatterns as ticket_urls
 from .user_profile_urls import urlpatterns as user_profile_urls
-from .image_urls import urlpatterns as image_urls
 from .customer_urls import urlpatterns as customer_urls
 
 # Combined urlpatterns so other modules can do `include("app.urls")` and get all app routes.
@@ -33,7 +32,6 @@ urlpatterns = (
     event_registration_urls +
     ticket_urls +
     user_profile_urls
-    + image_urls
     + customer_urls
 )
 

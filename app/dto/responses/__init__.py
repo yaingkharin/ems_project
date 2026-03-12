@@ -5,7 +5,6 @@ from .checkin_response import CheckinResponse
 from .customer_response import CustomerResponse
 from .event_registration_response import EventRegistrationResponse
 from .event_response import EventResponse
-from .image_response import ImageResponse
 from .invoice_response import InvoiceResponse
 from .pagination_response import PaginationResponse
 from .payment_response import PaymentResponse

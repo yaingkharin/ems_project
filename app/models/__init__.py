@@ -4,7 +4,6 @@ from .role_permission import RolePermission
 from .user import User
 from .venue import Venue
 from .category import Category
-from .image import Image
 from .event import Event
 from .ticket import Ticket
 from .booking import Booking
