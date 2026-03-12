@@ -128,7 +128,7 @@ AUTH_USER_MODEL = 'app.User' # Assuming the custom user model is in the 'app' ap
 # DRF settings
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'app.utils.customer_jwt.CustomerJWTAuthentication',
+        'app.utils.jwt.UniversalJWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',

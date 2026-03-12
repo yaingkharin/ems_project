@@ -11,7 +11,7 @@ from app.dto.requests.auth_request import LoginRequestDTO
 from app.dto.responses.auth_response import LoginResponseDTO
 from app.services.user_service import UserService
 from app.services.authentication_service import AuthenticationService
-from app.utils.jwt import generate_jwt_tokens
+from app.utils.jwt import JWTUtil
 from app.utils.api_response import api_response
 
 
@@ -74,11 +74,11 @@ class LoginView(APIView):
             User = get_user_model()
             try:
                 user_instance = User.objects.get(id=user_response_dto['id'])
-                tokens = generate_jwt_tokens(user_instance)
+                tokens = JWTUtil.generate_tokens(user_instance)
 
                 response_data = {
-                    "accessToken": tokens['access'],
-                    "refreshToken": tokens['refresh']
+                    "accessToken": tokens['access_token'],
+                    "refreshToken": tokens['refresh_token']
                 }
                 return api_response(
                     data=response_data,

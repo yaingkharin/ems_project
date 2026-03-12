@@ -2,7 +2,7 @@ from typing import Optional
 from app.models.customer import Customer
 from app.models.role import Role
 from app.services.google_oauth_service import GoogleOAuthService
-from app.utils.customer_jwt import generate_customer_tokens
+from app.utils.jwt import JWTUtil
 from rest_framework.exceptions import AuthenticationFailed
 
 class AuthenticationService:
@@ -38,8 +38,8 @@ class AuthenticationService:
             }
         )
 
-        # 3. Generate Tokens
-        tokens = generate_customer_tokens(customer)
+        # 4. Generate JWT tokens (Unified)
+        tokens = JWTUtil.generate_tokens(customer)
         
         return {
             'tokens': tokens,
