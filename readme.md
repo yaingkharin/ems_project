@@ -1,5 +1,9 @@
-venv 
-python -m venv venv
-venv\Scripts\activate
-change .env
-pip install -r requirements.txt
+_venv 
+
+_python -m venv venv
+
+_venv\Scripts\activate
+
+_change .env
+
+_pip install -r requirements.txt
