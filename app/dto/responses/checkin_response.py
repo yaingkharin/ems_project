@@ -12,6 +12,6 @@ class CheckinResponse(serializers.ModelSerializer):
         from app.models.checkin import Checkin
         model = Checkin
         fields = [
-            'id', 'booking', 'ticket_code', 'checkin_time', 'status',
+            'id', 'booking', 'checkin_time', 'status',
             'created_at', 'updated_at'
         ]

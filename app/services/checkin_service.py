@@ -107,7 +107,6 @@ class CheckinService:
 
         if search:
             queryset = queryset.filter(
-                Q(ticket_code__icontains=search) |
                 Q(status__icontains=search) |
                 Q(booking__id__icontains=search)
             )

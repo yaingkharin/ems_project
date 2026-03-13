@@ -18,6 +18,15 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    # Swagger UI and ReDoc
+    re_path(r'^swagger(?P<format>\.json|\.yaml)$',
+            schema_view.without_ui(cache_timeout=0),
+            name='schema-json'),
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0),
+         name='schema-swagger-ui'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0),
+         name='schema-redoc'),
+
     path('v1/', include([
         path('auth/', include([
             path('register/', RegisterView.as_view(), name='register'),
@@ -31,7 +40,6 @@ urlpatterns = [
         path('venue/', include('app.urls.venue_urls')),
         path('categories/', include('app.urls.category_urls')),
         path('events/', include('app.urls.event_urls')),
-        path('tickets/', include('app.urls.ticket_urls')),
         path('bookings/', include('app.urls.booking_urls')),
         path('payments/', include('app.urls.payment_urls')),
         path('invoices/', include('app.urls.invoice_urls')),
@@ -40,13 +48,4 @@ urlpatterns = [
         path('user-profiles/', include('app.urls.user_profile_urls')),
         path('customers/', include('app.urls.customer_urls')),
     ])),
-
-    # Swagger UI and ReDoc
-    re_path(r'^swagger(?P<format>\.json|\.yaml)$',
-            schema_view.without_ui(cache_timeout=0),
-            name='schema-json'),
-    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0),
-         name='schema-swagger-ui'),
-    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0),
-         name='schema-redoc'),
 ]

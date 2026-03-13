@@ -6,7 +6,6 @@ from django.utils import timezone
 from app.models.booking import Booking
 from app.models.user import User
 from app.models.event import Event
-from app.models.ticket import Ticket
 
 
 class BookingService:
@@ -20,42 +19,31 @@ class BookingService:
 
     @staticmethod
     def get_all_bookings():
-        return Booking.objects.select_related('user', 'event', 'ticket').all()
+        return Booking.objects.select_related('customer', 'event').all()
 
     @staticmethod
     def get_booking_by_id(pk: int):
         try:
-            return Booking.objects.select_related('user', 'event', 'ticket').get(pk=pk)
+            return Booking.objects.select_related('customer', 'event').get(pk=pk)
         except Booking.DoesNotExist:
             return None
 
     @staticmethod
     @transaction.atomic
     def create_booking(validated_data: Dict[str, Any]):
-        user = BookingService._resolve_fk(validated_data.get('user'), User)
+        customer = BookingService._resolve_fk(validated_data.get('customer'), User)
         event = BookingService._resolve_fk(validated_data.get('event'), Event)
-        ticket = BookingService._resolve_fk(validated_data.get('ticket'), Ticket)
 
         quantity = validated_data.get('quantity')
         total_amount = validated_data.get('total_amount')
 
-        # Basic ticket availability check
-        if ticket and quantity and ticket.quantity - ticket.sold < quantity:
-            raise ValueError('Not enough tickets available')
-
         booking = Booking.objects.create(
-            user=user,
+            customer=customer,
             event=event,
-            ticket=ticket,
             quantity=quantity,
             total_amount=total_amount,
             status=validated_data.get('status', 'pending')
         )
-
-        # Update ticket sold count
-        if ticket and quantity:
-            ticket.sold += quantity
-            ticket.save()
 
         return booking
 
@@ -66,21 +54,12 @@ class BookingService:
         if not booking:
             return None
 
-        if 'user' in validated_data:
-            booking.user = BookingService._resolve_fk(validated_data.get('user'), User)
+        if 'customer' in validated_data:
+            booking.customer = BookingService._resolve_fk(validated_data.get('customer'), User)
         if 'event' in validated_data:
             booking.event = BookingService._resolve_fk(validated_data.get('event'), Event)
-        if 'ticket' in validated_data:
-            booking.ticket = BookingService._resolve_fk(validated_data.get('ticket'), Ticket)
         if 'quantity' in validated_data:
-            # Adjust ticket sold counts if ticket is set
-            old_qty = booking.quantity
-            new_qty = validated_data.get('quantity')
-            booking.quantity = new_qty
-            if booking.ticket:
-                delta = new_qty - old_qty
-                booking.ticket.sold = max(0, booking.ticket.sold + delta)
-                booking.ticket.save()
+            booking.quantity = validated_data.get('quantity')
         if 'total_amount' in validated_data:
             booking.total_amount = validated_data.get('total_amount')
         if 'status' in validated_data:
@@ -99,10 +78,6 @@ class BookingService:
         booking.is_deleted = True
         booking.deleted_at = timezone.now()
         booking.save()
-        # Rollback ticket sold count for soft deleted booking
-        if booking.ticket:
-            booking.ticket.sold = max(0, booking.ticket.sold - booking.quantity)
-            booking.ticket.save()
         return True
 
     @staticmethod
@@ -115,10 +90,6 @@ class BookingService:
         booking = BookingService.get_booking_by_id(pk)
         if not booking:
             return False
-        # Rollback ticket sold count before hard delete
-        if booking.ticket:
-            booking.ticket.sold = max(0, booking.ticket.sold - booking.quantity)
-            booking.ticket.save()
         booking.delete()  # Hard delete
         return True
 
@@ -131,19 +102,17 @@ class BookingService:
         search = params.get('search')
         filters = params.get('filters') or {}
 
-        qs = Booking.objects.select_related('user', 'event', 'ticket').all()
+        qs = Booking.objects.select_related('customer', 'event').all()
 
         if search:
             qs = qs.filter(
-                Q(user__email__icontains=search) | Q(event__event_name__icontains=search) | Q(ticket__ticket_type__icontains=search)
+                Q(customer__email__icontains=search) | Q(event__event_name__icontains=search)
             )
 
-        if 'user_id' in filters:
-            qs = qs.filter(user_id=filters['user_id'])
+        if 'customer_id' in filters:
+            qs = qs.filter(customer_id=filters['customer_id'])
         if 'event_id' in filters:
             qs = qs.filter(event_id=filters['event_id'])
-        if 'ticket_id' in filters:
-            qs = qs.filter(ticket_id=filters['ticket_id'])
 
         order_prefix = '' if sort_order == 'asc' else '-'
         qs = qs.order_by(f"{order_prefix}{sort_by}")
