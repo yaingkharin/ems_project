@@ -2,7 +2,6 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.parsers import MultiPartParser, FormParser
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
@@ -20,7 +19,6 @@ class EventListCreateView(APIView):
     Handles listing all events and creating a new event.
     """
     permission_classes = [IsAuthenticated, CheckPermission]
-    parser_classes = [MultiPartParser, FormParser]
     method_permissions = {
         'GET': 'all_events',
         'POST': 'create_events',
@@ -65,7 +63,6 @@ class EventRetrieveUpdateDestroyView(APIView):
     Handles retrieving, updating, and deleting a single event by ID.
     """
     permission_classes = [IsAuthenticated, CheckPermission]
-    parser_classes = [MultiPartParser, FormParser]
     method_permissions = {
         'GET': 'view_events',
         'PUT': 'edit_events',
@@ -114,7 +111,7 @@ class EventRetrieveUpdateDestroyView(APIView):
         }
     )
     def delete(self, request, pk):
-        if EventService.delete_event(pk):
+        if EventService.soft_delete_event(pk, request.user):
             return api_response(message="Event deleted successfully.", status_code=status.HTTP_204_NO_CONTENT)
         return api_response(message="Event not found.", success=False, status_code=status.HTTP_404_NOT_FOUND)
 

@@ -9,6 +9,14 @@ class EventResponse(serializers.ModelSerializer):
     """
     category = CategoryResponse(read_only=True)
     venue = VenueResponse(read_only=True)
+    image = serializers.SerializerMethodField()
+    start_time = serializers.TimeField(format='%H:%M')
+    end_time = serializers.TimeField(format='%H:%M')
+
+    def get_image(self, obj):
+        if obj.image:
+            return f"uploads/{obj.image}"
+        return None
 
     class Meta:
         from app.models.event import Event
