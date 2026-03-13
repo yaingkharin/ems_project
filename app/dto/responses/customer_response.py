@@ -1,8 +1,9 @@
 from rest_framework import serializers
 from app.models.customer import Customer
+from app.dto.responses.role_response import RoleResponse
 
 class CustomerResponse(serializers.ModelSerializer):
-    role = serializers.StringRelatedField()
+    role = RoleResponse(read_only=True)
 
     class Meta:
         model = Customer

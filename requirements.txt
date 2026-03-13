@@ -57,3 +57,12 @@ google-auth==2.38.0
 
 # HTTP requests library
 requests==2.32.3
+
+# Bakong KHQR generation
+bakong-khqr==0.5.1
+
+# Bakong image assets and template generation
+bakong-khqr[image]==12.1.1
+
+# Python Imaging Library
+Pillow

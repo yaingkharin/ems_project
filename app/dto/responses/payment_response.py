@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from app.dto.responses.booking_response import BookingResponse
+from app.models.payment import Payment
 
 
 class PaymentResponse(serializers.ModelSerializer):
@@ -9,9 +10,12 @@ class PaymentResponse(serializers.ModelSerializer):
     booking = BookingResponse(read_only=True)
 
     class Meta:
-        from app.models.payment import Payment
         model = Payment
         fields = [
-            'id', 'booking', 'amount', 'method', 'transaction_ref', 'status', 'payment_date',
-            'created_at', 'updated_at'
+            'id', 'booking', 'amount', 'payment_method', 'qr_method', 'currency',
+            'merchant_name', 'merchant_city', 'description',
+            'status', 'qr', 'md5', 'bakongHash',
+            'toAccountId', 'fromAccountId', 'paid', 'paid_at', 'expire_at',
+            'deep_link', 'deep_link_web',
+            'external_ref', 'created_at', 'updated_at'
         ]
