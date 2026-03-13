@@ -7,9 +7,10 @@ class CreatePaymentRequest(serializers.Serializer):
     """
     booking_id = serializers.IntegerField()
     amount = serializers.DecimalField(max_digits=10, decimal_places=2)
-    method = serializers.CharField(max_length=255)
-    transaction_ref = serializers.CharField(max_length=255, allow_blank=True, required=False)
-    status = serializers.ChoiceField(choices=['pending', 'paid', 'failed'], default='pending')
+    payment_method = serializers.CharField(max_length=255)
+    qr_method = serializers.CharField(max_length=255, required=False)
+    currency = serializers.CharField(max_length=255, required=False)
+    status = serializers.ChoiceField(choices=['pending', 'completed', 'failed'], default='pending')
 
 
 class UpdatePaymentRequest(serializers.Serializer):
@@ -18,6 +19,7 @@ class UpdatePaymentRequest(serializers.Serializer):
     """
     booking_id = serializers.IntegerField(required=False)
     amount = serializers.DecimalField(max_digits=10, decimal_places=2, required=False)
-    method = serializers.CharField(max_length=255, required=False)
-    transaction_ref = serializers.CharField(max_length=255, allow_blank=True, required=False)
-    status = serializers.ChoiceField(choices=['pending', 'paid', 'failed'], required=False)
+    payment_method = serializers.CharField(max_length=255, required=False)
+    qr_method = serializers.CharField(max_length=255, required=False)
+    currency = serializers.CharField(max_length=255, required=False)
+    status = serializers.ChoiceField(choices=['pending', 'completed', 'failed'], required=False)

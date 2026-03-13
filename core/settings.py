@@ -117,6 +117,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Media files (User uploaded content)
+MEDIA_URL = '/uploads/'
+MEDIA_ROOT = BASE_DIR / 'uploads'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
@@ -141,6 +145,11 @@ REST_FRAMEWORK = {
 # Google OAuth Credentials
 GOOGLE_CLIENT_ID = config('GOOGLE_CLIENT_ID', default='')
 GOOGLE_CLIENT_SECRET = config('GOOGLE_CLIENT_SECRET', default='')
+
+# Bakong Credentials
+BAKONG_ACCESS_TOKEN = config('BAKONG_ACCESS_TOKEN', default='')
+BAKONG_ACCOUNT_USERNAME = config('BAKONG_ACCOUNT_USERNAME', default='')
+
 # Simple JWT settings
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=180),
