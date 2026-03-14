@@ -13,6 +13,7 @@ class Checkin(models.Model):
     ]
 
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='checkins')
+    ticket_code = models.CharField(max_length=255)
     checkin_time = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='not_checked')
     is_deleted = models.BooleanField(default=False)
@@ -22,7 +23,7 @@ class Checkin(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Check-in for Booking {self.booking.id}"
+        return f"Check-in for Booking {self.booking.id} - {self.ticket_code}"
 
     class Meta:
         db_table = "checkins"

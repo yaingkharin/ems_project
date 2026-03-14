@@ -2,7 +2,7 @@ from django.urls import path, include, re_path
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-from app.views.auth_views import RegisterView, LoginView, LogoutView, GoogleLoginView
+from app.views.auth_views import RegisterView, LoginView, LogoutView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -32,7 +32,6 @@ urlpatterns = [
             path('register/', RegisterView.as_view(), name='register'),
             path('login/', LoginView.as_view(), name='login'),
             path('logout/', LogoutView.as_view(), name='logout'),
-            path('google/', GoogleLoginView.as_view(), name='google-login'),
         ])),
         path('roles/', include('app.urls.role_urls')),
         path('users/', include('app.urls.user_urls')),
@@ -41,6 +40,7 @@ urlpatterns = [
         path('venue/', include('app.urls.venue_urls')),
         path('categories/', include('app.urls.category_urls')),
         path('events/', include('app.urls.event_urls')),
+        path('tickets/', include('app.urls.ticket_urls')),
         path('bookings/', include('app.urls.booking_urls')),
         path('payments/', include('app.urls.payment_urls')),
         path('invoices/', include('app.urls.invoice_urls')),

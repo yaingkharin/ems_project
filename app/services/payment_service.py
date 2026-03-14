@@ -47,7 +47,7 @@ class PaymentService:
         """
         booking_id = request_data.pop('booking_id')
         try:
-            booking = Booking.objects.select_related('user', 'event').get(id=booking_id)
+            booking = Booking.objects.select_related('customer', 'event').get(id=booking_id)
         except Booking.DoesNotExist:
             raise ObjectDoesNotExist(f"Booking with id {booking_id} does not exist.")
 
@@ -167,7 +167,7 @@ class PaymentService:
             queryset = queryset.filter(
                 Q(payment_method__icontains=search) |
                 Q(status__icontains=search) |
-                Q(booking__user__email__icontains=search)
+                Q(booking__customer__email__icontains=search)
             )
 
         if sort_order.lower() == 'desc':
