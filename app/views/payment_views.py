@@ -57,6 +57,8 @@ class PaymentListCreateView(APIView):
             if result.get('qr_image'):
                 response_data = dict(response_data)
                 response_data['qr_image'] = result.get('qr_image')
+                response_data['md5'] = result['payment'].md5
+                response_data['qr'] = result['payment'].qr
                 message = "Payment initiated. Please scan the QR code."
 
             return api_response(
@@ -315,7 +317,7 @@ class TestBakongPaymentView(APIView):
             account_username = getattr(settings, 'BAKONG_ACCOUNT_USERNAME', os.getenv('BAKONG_ACCOUNT_USERNAME'))
             print('this is bank acc:', account_username)
             
-            khqr = KHQR(token)
+            khqr = KHQR(bakong_token=token)
             
             qr_string = khqr.create_qr(
                 bank_account=account_username,
@@ -376,7 +378,7 @@ class TestBakongCheckStatusView(APIView):
             import os
             
             token = getattr(settings, 'BAKONG_ACCESS_TOKEN', os.getenv('BAKONG_ACCESS_TOKEN'))
-            khqr = KHQR(token)
+            khqr = KHQR(bakong_token=token)
             
             # Use the SDK's built-in check payment method
             status_result = khqr.check_payment(md5)

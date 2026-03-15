@@ -10,6 +10,8 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from django.utils import timezone
 
+from django.conf import settings
+import os
 from bakong_khqr import KHQR
 
 from app.models.payment import Payment
@@ -27,13 +29,10 @@ class PaymentService:
     """
 
     def __init__(self):
-        self.token = os.getenv('BAKONG_ACCESS_TOKEN')
-        self.account_username = os.getenv('BAKONG_ACCOUNT_USERNAME')
-        self.bakong_api_url = os.getenv(
-            'BAKONG_PROD_BASE_API_URL',
-            'https://api-bakong.nbc.gov.kh/v1'
-        )
-        self.khqr_client = KHQR(token=self.token)
+        self.token = getattr(settings, 'BAKONG_ACCESS_TOKEN', os.getenv('BAKONG_ACCESS_TOKEN'))
+        self.account_username = getattr(settings, 'BAKONG_ACCOUNT_USERNAME', os.getenv('BAKONG_ACCOUNT_USERNAME'))
+        self.bakong_api_url = getattr(settings, 'BAKONG_PROD_BASE_API_URL', 'https://api-bakong.nbc.gov.kh/v1')
+        self.khqr_client = KHQR(bakong_token=self.token)
 
     # ------------------------------------------------------------------
     # PAYMENT CRUD
@@ -64,8 +63,8 @@ class PaymentService:
         """Handles the creation of a Bakong payment and generates KHQR payload."""
         expire_at = timezone.now() + timedelta(minutes=BAKONG_EXPIRY_MINUTES)
         
-        # Exclude 'amount' from request_data to prevent overriding
-        payment_data = {k: v for k, v in request_data.items() if k != 'amount'}
+        # Exclude 'amount' and 'status' from request_data to prevent overriding
+        payment_data = {k: v for k, v in request_data.items() if k not in ['amount', 'status']}
         
         payment = Payment.objects.create(
             booking=booking,
@@ -90,7 +89,7 @@ class PaymentService:
 
     def _create_cash_payment(self, booking: Booking, amount: float, request_data: dict) -> dict:
         """Handles the creation of a completed Cash payment."""
-        payment_data = {k: v for k, v in request_data.items() if k != 'amount'}
+        payment_data = {k: v for k, v in request_data.items() if k not in ['amount', 'status']}
 
         payment = Payment.objects.create(
             booking=booking,
@@ -210,7 +209,7 @@ class PaymentService:
         try:
             amount = float(payment.amount)
 
-            khqr = KHQR(self.token)
+            khqr = KHQR(bakong_token=self.token)
 
             qr_string = khqr.create_qr(
                 bank_account=self.account_username,
@@ -230,9 +229,8 @@ class PaymentService:
             # Persist back to payment
             payment.qr = qr_string
             payment.md5 = md5
-            # We save the generated base64 string directly so it can be retrieved without regenerating
-            payment.deep_link = qr_image 
-            payment.save(update_fields=['qr', 'md5', 'deep_link'])
+            # Don't store the large base64 image in database, return it separately
+            payment.save(update_fields=['qr', 'md5'])
 
             return {
                 "qr_data": qr_string,
