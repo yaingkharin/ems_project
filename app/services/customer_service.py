@@ -22,20 +22,20 @@ class CustomerService:
     @staticmethod
     def get_customer_by_id(customer_id: int) -> Optional[dict]:
         try:
-            customer = Customer.objects.get(id=customer_id)
+            customer = Customer.objects.get(id=customer_id, is_deleted=False)
             return CustomerResponse(customer).data
         except ObjectDoesNotExist:
             return None
 
     @staticmethod
     def get_all_customers() -> List[dict]:
-        customers = Customer.objects.all()
+        customers = Customer.objects.filter(is_deleted=False)
         return [CustomerResponse(c).data for c in customers]
 
     @staticmethod
     def update_customer(customer_id: int, request_data: dict) -> Optional[dict]:
         try:
-            customer = Customer.objects.get(id=customer_id)
+            customer = Customer.objects.get(id=customer_id, is_deleted=False)
             customer.first_name = request_data.get('first_name', customer.first_name)
             customer.last_name = request_data.get('last_name', customer.last_name)
             customer.email = request_data.get('email', customer.email)
@@ -65,7 +65,7 @@ class CustomerService:
         sort_order = validated_data.get('sort_order', 'asc')
         search = validated_data.get('search', None)
 
-        queryset = Customer.objects.all()
+        queryset = Customer.objects.filter(is_deleted=False)
 
         if search:
             queryset = queryset.filter(

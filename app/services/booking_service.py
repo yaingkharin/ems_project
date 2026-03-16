@@ -20,12 +20,12 @@ class BookingService:
 
     @staticmethod
     def get_all_bookings():
-        return Booking.objects.select_related('customer', 'event', 'ticket').all()
+        return Booking.objects.select_related('customer', 'event', 'ticket').filter(is_deleted=False)
 
     @staticmethod
     def get_booking_by_id(pk: int):
         try:
-            return Booking.objects.select_related('customer', 'event', 'ticket').get(pk=pk)
+            return Booking.objects.select_related('customer', 'event', 'ticket').get(pk=pk, is_deleted=False)
         except Booking.DoesNotExist:
             return None
 
@@ -131,7 +131,7 @@ class BookingService:
         search = params.get('search')
         filters = params.get('filters') or {}
 
-        qs = Booking.objects.select_related('customer', 'event', 'ticket').all()
+        qs = Booking.objects.select_related('customer', 'event', 'ticket').filter(is_deleted=False)
 
         if search:
             qs = qs.filter(

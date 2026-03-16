@@ -18,18 +18,18 @@ class CategoryService:
     @staticmethod
     def get_category_by_id(id: int) -> Optional[Category]: # Return type changed to Category model
         try:
-            return Category.objects.get(id=id)
+            return Category.objects.get(id=id, is_deleted=False)
         except ObjectDoesNotExist:
             return None
 
     @staticmethod
     def get_all_category() -> List[Category]: # Return type changed to List[Category] model
-        return Category.objects.all()
+        return Category.objects.filter(is_deleted=False)
 
     @staticmethod
     def update_category(id: int, request_data: dict) -> Optional[Category]: # Return type changed to Category model
         try:
-            category = Category.objects.get(id=id)
+            category = Category.objects.get(id=id, is_deleted=False)
             category.category_name = request_data.get('category_name', category.category_name)
             category.description = request_data.get('description', category.description)
             category.save()
@@ -70,7 +70,7 @@ class CategoryService:
         search = validated_data.get('search', None)
         filters = validated_data.get('filters', {})
 
-        queryset = Category.objects.all()
+        queryset = Category.objects.filter(is_deleted=False)
 
         if filters:
             queryset = queryset.filter(**filters)

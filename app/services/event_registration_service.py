@@ -18,12 +18,12 @@ class EventRegistrationService:
 
     @staticmethod
     def get_all_event_registrations():
-        return EventRegistration.objects.select_related('user', 'event').all()
+        return EventRegistration.objects.select_related('user', 'event').filter(is_deleted=False)
 
     @staticmethod
     def get_event_registration_by_id(pk: int):
         try:
-            return EventRegistration.objects.select_related('user', 'event').get(pk=pk)
+            return EventRegistration.objects.select_related('user', 'event').get(pk=pk, is_deleted=False)
         except EventRegistration.DoesNotExist:
             return None
 
@@ -96,7 +96,7 @@ class EventRegistrationService:
         search = params.get('search')
         filters = params.get('filters') or {}
 
-        qs = EventRegistration.objects.select_related('user', 'event').all()
+        qs = EventRegistration.objects.select_related('user', 'event').filter(is_deleted=False)
 
         if search:
             qs = qs.filter(

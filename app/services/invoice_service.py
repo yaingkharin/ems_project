@@ -34,13 +34,13 @@ class InvoiceService:
     @staticmethod
     def get_all_invoices():
         """Return a QuerySet of all invoices."""
-        return Invoice.objects.select_related('booking', 'user').all()
+        return Invoice.objects.select_related('booking', 'user').filter(is_deleted=False)
 
     @staticmethod
     def get_invoice_by_id(pk: int):
         """Return an Invoice instance or None if not found."""
         try:
-            return Invoice.objects.select_related('booking', 'user').get(pk=pk)
+            return Invoice.objects.select_related('booking', 'user').get(pk=pk, is_deleted=False)
         except Invoice.DoesNotExist:
             return None
 
@@ -136,7 +136,7 @@ class InvoiceService:
         search = params.get('search')
         filters = params.get('filters') or {}
 
-        qs = Invoice.objects.select_related('booking', 'user').all()
+        qs = Invoice.objects.select_related('booking', 'user').filter(is_deleted=False)
 
         # Apply search across invoice_no and payment_method
         if search:

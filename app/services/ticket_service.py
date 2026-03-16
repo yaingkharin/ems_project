@@ -20,18 +20,18 @@ class TicketService:
     @staticmethod
     def get_ticket_by_id(ticket_id: int) -> Optional[Ticket]:
         try:
-            return Ticket.objects.get(id=ticket_id)
+            return Ticket.objects.get(id=ticket_id, is_deleted=False)
         except ObjectDoesNotExist:
             return None
 
     @staticmethod
     def get_all_tickets() -> List[Ticket]:
-        return Ticket.objects.all()
+        return Ticket.objects.filter(is_deleted=False)
 
     @staticmethod
     def update_ticket(ticket_id: int, request_data: dict) -> Optional[Ticket]:
         try:
-            ticket = Ticket.objects.get(id=ticket_id)
+            ticket = Ticket.objects.get(id=ticket_id, is_deleted=False)
             if 'event_id' in request_data:
                 ticket.event = Event.objects.get(id=request_data.pop('event_id'))
             
@@ -76,7 +76,7 @@ class TicketService:
         search = validated_data.get('search', None)
         filters = validated_data.get('filters', {})
 
-        queryset = Ticket.objects.all()
+        queryset = Ticket.objects.filter(is_deleted=False)
 
         if filters:
             queryset = queryset.filter(**filters)

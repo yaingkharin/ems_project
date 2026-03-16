@@ -118,13 +118,13 @@ class PaymentService:
     @staticmethod
     def get_all_payments() -> List[Payment]:
         """Retrieves all payments."""
-        return Payment.objects.select_related('booking').all()
+        return Payment.objects.select_related('booking').filter(is_deleted=False)
 
     @staticmethod
     def update_payment(payment_id: int, request_data: dict) -> Optional[Payment]:
         """Updates an existing payment."""
         try:
-            payment = Payment.objects.get(id=payment_id)
+            payment = Payment.objects.get(id=payment_id, is_deleted=False)
 
             if 'booking_id' in request_data:
                 payment.booking = Booking.objects.get(id=request_data.pop('booking_id'))
@@ -157,7 +157,7 @@ class PaymentService:
         search = validated_data.get('search', None)
         filters = validated_data.get('filters', {})
 
-        queryset = Payment.objects.select_related('booking').all()
+        queryset = Payment.objects.select_related('booking').filter(is_deleted=False)
 
         if filters:
             queryset = queryset.filter(**filters)

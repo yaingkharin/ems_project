@@ -33,20 +33,20 @@ class UserService:
     @staticmethod
     def get_user_by_id(user_id: int) -> Optional[UserResponse]:
         try:
-            user = User.objects.get(id=user_id)
+            user = User.objects.get(id=user_id, is_deleted=False)
             return UserResponse(user).data
         except ObjectDoesNotExist:
             return None
 
     @staticmethod
     def get_all_users() -> List[UserResponse]:
-        users = User.objects.all()
+        users = User.objects.filter(is_deleted=False)
         return [UserResponse(user).data for user in users]
 
     @staticmethod
     def update_user(user_id: int, request_data: dict) -> Optional[UserResponse]:
         try:
-            user = User.objects.get(id=user_id)
+            user = User.objects.get(id=user_id, is_deleted=False)
             user.email = request_data.get('email', user.email)
             if 'password' in request_data:
                 user.password = hash_password(request_data['password'])
@@ -106,7 +106,7 @@ class UserService:
         search = validated_data.get('search', None)
         filters = validated_data.get('filters', {}) # Use 'filters' plural
 
-        queryset = User.objects.all()
+        queryset = User.objects.filter(is_deleted=False)
 
         # Apply filters from the 'filters' dictionary
         if filters:

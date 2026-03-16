@@ -30,7 +30,7 @@ class UserProfileService:
         Retrieves a single user profile by its ID.
         """
         try:
-            return UserProfile.objects.select_related('user').get(id=profile_id)
+            return UserProfile.objects.select_related('user').get(id=profile_id, is_deleted=False)
         except ObjectDoesNotExist:
             return None
     
@@ -40,7 +40,7 @@ class UserProfileService:
         Retrieves a single user profile by user ID.
         """
         try:
-            return UserProfile.objects.select_related('user').get(user__id=user_id)
+            return UserProfile.objects.select_related('user').get(user__id=user_id, is_deleted=False)
         except ObjectDoesNotExist:
             return None
 
@@ -50,7 +50,7 @@ class UserProfileService:
         """
         Retrieves all user profiles.
         """
-        return UserProfile.objects.select_related('user').all()
+        return UserProfile.objects.select_related('user').filter(is_deleted=False)
 
     @staticmethod
     def update_user_profile(profile_id: int, request_data: dict) -> Optional[UserProfile]:
@@ -110,7 +110,7 @@ class UserProfileService:
         search = validated_data.get('search', None)
         filters = validated_data.get('filters', {})
 
-        queryset = UserProfile.objects.select_related('user').all()
+        queryset = UserProfile.objects.select_related('user').filter(is_deleted=False)
 
         if filters:
             queryset = queryset.filter(**filters)

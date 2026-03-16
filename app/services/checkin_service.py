@@ -40,7 +40,7 @@ class CheckinService:
         """
         Retrieves all check-ins.
         """
-        return Checkin.objects.select_related('booking').all()
+        return Checkin.objects.select_related('booking').filter(is_deleted=False)
 
     @staticmethod
     def update_checkin(checkin_id: int, request_data: dict) -> Optional[Checkin]:
@@ -48,7 +48,7 @@ class CheckinService:
         Updates an existing check-in.
         """
         try:
-            checkin = Checkin.objects.get(id=checkin_id)
+            checkin = Checkin.objects.get(id=checkin_id, is_deleted=False)
 
             if 'booking_id' in request_data:
                 checkin.booking = Booking.objects.get(id=request_data.pop('booking_id'))
@@ -100,7 +100,7 @@ class CheckinService:
         search = validated_data.get('search', None)
         filters = validated_data.get('filters', {})
 
-        queryset = Checkin.objects.select_related('booking').all()
+        queryset = Checkin.objects.select_related('booking').filter(is_deleted=False)
 
         if filters:
             queryset = queryset.filter(**filters)

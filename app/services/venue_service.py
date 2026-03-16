@@ -22,20 +22,20 @@ class VenueService:
     @staticmethod
     def get_venue_by_id(venue_id: int) -> Optional[VenueResponse]:
         try:
-            venue = Venue.objects.get(venue_id=venue_id)
+            venue = Venue.objects.get(venue_id=venue_id, is_deleted=False)
             return VenueResponse(venue).data
         except ObjectDoesNotExist:
             return None
 
     @staticmethod
     def get_all_venues() -> List[VenueResponse]:
-        venues = Venue.objects.all()
+        venues = Venue.objects.filter(is_deleted=False)
         return [VenueResponse(v).data for v in venues]
 
     @staticmethod
     def update_venue(venue_id: int, request_data: dict) -> Optional[VenueResponse]:
         try:
-            venue = Venue.objects.get(venue_id=venue_id)
+            venue = Venue.objects.get(venue_id=venue_id, is_deleted=False)
             venue.name = request_data.get('name', venue.name)
             venue.address = request_data.get('address', venue.address)
             venue.capacity = request_data.get('capacity', venue.capacity)
@@ -78,7 +78,7 @@ class VenueService:
         search = validated_data.get('search', None)
         filters = validated_data.get('filters', {})
 
-        queryset = Venue.objects.all()
+        queryset = Venue.objects.filter(is_deleted=False)
 
         if filters:
             queryset = queryset.filter(**filters)
