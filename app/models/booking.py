@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from app.models.user import User
+from app.models.customer import Customer
 from app.models.event import Event
 from app.models.ticket import Ticket
 
@@ -23,7 +23,7 @@ class Booking(models.Model):
     objects = BookingManager() # Active bookings only
     all_objects = models.Manager() # All bookings including deleted
 
-    customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookings')
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='bookings')
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='bookings')
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name='bookings')
     quantity = models.IntegerField()

@@ -13,7 +13,7 @@ class Checkin(models.Model):
     ]
 
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='checkins')
-    ticket_code = models.CharField(max_length=255)
+    ticket_code = models.CharField(max_length=255, null=True, blank=True)
     checkin_time = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='not_checked')
     is_deleted = models.BooleanField(default=False)

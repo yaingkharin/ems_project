@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-from app.dto.requests.booking_request import CreateBookingRequest, UpdateBookingRequest
+from app.dto.requests.booking_request import CreateBookingRequest, UpdateBookingRequest, AdminCreateBookingRequest
 from app.dto.responses.booking_response import BookingResponse
 from app.services.booking_service import BookingService
 from app.dto.requests.pagination_request import PaginationRequest
@@ -42,6 +42,51 @@ class BookingListCreateView(APIView):
     )
     def post(self, request):
         serializer = CreateBookingRequest(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        validated_data = serializer.validated_data
+        
+        # Find or create customer for the authenticated user
+        from app.models.customer import Customer
+        customer, created = Customer.objects.get_or_create(
+            email=request.user.email,
+            defaults={
+                'first_name': request.user.first_name if hasattr(request.user, 'first_name') else '',
+                'last_name': request.user.last_name if hasattr(request.user, 'last_name') else '',
+            }
+        )
+        validated_data['customer'] = customer
+
+        try:
+            booking = BookingService.create_booking(validated_data)
+            response_serializer = BookingResponse(booking)
+            return api_response(
+                data=response_serializer.data,
+                message="Booking created successfully.",
+                status_code=status.HTTP_201_CREATED
+            )
+        except Exception as e:
+            return api_response(message=str(e), success=False, status_code=status.HTTP_400_BAD_REQUEST)
+
+
+class AdminBookingCreateView(APIView):
+    """
+    Handles admin creating bookings for any customer.
+    """
+    permission_classes = [IsAuthenticated, CheckPermission]
+    method_permissions = {
+        'POST': 'admin_create_bookings',
+    }
+
+    @swagger_auto_schema(
+        operation_description="Create a new booking for any customer (Admin only).",
+        request_body=AdminCreateBookingRequest,
+        responses={
+            201: BookingResponse,
+            400: "Bad Request"
+        }
+    )
+    def post(self, request):
+        serializer = AdminCreateBookingRequest(data=request.data)
         serializer.is_valid(raise_exception=True)
         validated_data = serializer.validated_data
 

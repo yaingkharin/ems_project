@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from app.models.booking import Booking
-from app.models.user import User
+from app.models.customer import Customer
 from app.models.event import Event
 from app.models.ticket import Ticket
 
@@ -32,7 +32,10 @@ class BookingService:
     @staticmethod
     @transaction.atomic
     def create_booking(validated_data: Dict[str, Any]):
-        customer = BookingService._resolve_fk(validated_data.get('customer'), User)
+        customer = BookingService._resolve_fk(validated_data.get('customer'), Customer)
+        if not customer:
+            raise ValueError('Customer is required')
+        
         event = BookingService._resolve_fk(validated_data.get('event'), Event)
         ticket = BookingService._resolve_fk(validated_data.get('ticket'), Ticket)
 
@@ -67,7 +70,7 @@ class BookingService:
             return None
 
         if 'customer' in validated_data:
-            booking.customer = BookingService._resolve_fk(validated_data.get('customer'), User)
+            booking.customer = BookingService._resolve_fk(validated_data.get('customer'), Customer)
         if 'event' in validated_data:
             booking.event = BookingService._resolve_fk(validated_data.get('event'), Event)
         if 'ticket' in validated_data:

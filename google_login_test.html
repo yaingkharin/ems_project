@@ -20,8 +20,9 @@
     <p>Use this to test your backend integration</p>
     
     <div id="g_id_onload"
-         data-client_id="260201255689-uih9pse0dm9hra3c3pl2e1hiponv0735.apps.googleusercontent.com"
-         data-callback="handleCredentialResponse">
+         data-client_id="90664733660-fma0g3bvif3smoosoq3i5d5gr9ajsn23.apps.googleusercontent.com"
+         data-callback="handleCredentialResponse"
+         data-auto_prompt="false">
     </div>
     <div class="g_id_signin" data-type="standard"></div>
 
@@ -50,7 +51,25 @@
                 })
             });
 
-            const data = await apiResponse.json();
+            console.log("Response status:", apiResponse.status);
+            console.log("Response headers:", apiResponse.headers);
+
+            // Get response as text first to debug
+            const responseText = await apiResponse.text();
+            console.log("Raw response:", responseText);
+
+            if (!apiResponse.ok) {
+                throw new Error(`Backend returned ${apiResponse.status}: ${responseText}`);
+            }
+
+            // Try to parse as JSON
+            let data;
+            try {
+                data = JSON.parse(responseText);
+            } catch (parseError) {
+                throw new Error(`Invalid JSON response: ${responseText.substring(0, 200)}...`);
+            }
+
             responseDiv.textContent = JSON.stringify(data, null, 2);
             responseDiv.style.display = 'block';
         } catch (error) {
