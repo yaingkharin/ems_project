@@ -18,7 +18,8 @@ class GoogleOAuthService:
                 audience=[
                     settings.GOOGLE_CLIENT_ID,
                     '407408718192.apps.googleusercontent.com' # Google Playground default
-                ]
+                ],
+                clock_skew_in_seconds=10
             )
 
             # ID token is valid. Get the user's Google Account ID from the decoded token.
