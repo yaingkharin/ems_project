@@ -6,6 +6,9 @@ from app.models.booking import Booking
 from django.db.models import Q
 import uuid
 import datetime
+import qrcode
+import io
+import base64
 
 
 class EventTicketService:
@@ -48,10 +51,28 @@ class EventTicketService:
             # Generate a unique ticket code if missing
             ticket_code = f"TKT-{datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S')}-{uuid.uuid4().hex[:6].upper()}"
 
+        qr_code = validated_data.get('qr_code', None)
+        if not qr_code:
+            # Generate QR code for the ticket_code
+            qr = qrcode.QRCode(
+                version=1,
+                error_correction=qrcode.constants.ERROR_CORRECT_L,
+                box_size=10,
+                border=4,
+            )
+            qr.add_data(ticket_code)
+            qr.make(fit=True)
+
+            img = qr.make_image(fill_color="black", back_color="white")
+            buffered = io.BytesIO()
+            img.save(buffered, format="PNG")
+            qr_base64 = base64.b64encode(buffered.getvalue()).decode()
+            qr_code = f"data:image/png;base64,{qr_base64}"
+
         event_ticket = EventTicket.objects.create(
             ticket_code=ticket_code,
             booking=booking,
-            qr_code=validated_data.get('qr_code', None),
+            qr_code=qr_code,
             status=validated_data.get('status', 'UNUSED')
         )
         return event_ticket
@@ -123,6 +144,8 @@ class EventTicketService:
         # Apply simple filters
         if 'booking_id' in filters:
             qs = qs.filter(booking_id=filters['booking_id'])
+        if 'booking.id' in filters:
+            qs = qs.filter(booking_id=filters['booking.id'])
         if 'status' in filters:
             qs = qs.filter(status=filters['status'])
 

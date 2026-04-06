@@ -66,3 +66,6 @@ bakong-khqr[image]==0.5.4
 
 # Python Imaging Library
 Pillow
+
+# QR Code generation
+qrcode==8.0

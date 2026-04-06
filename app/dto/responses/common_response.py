@@ -25,6 +25,14 @@ class EventCustomResponse(serializers.Serializer):
     start_time = serializers.TimeField()
     category = CategoryCustomResponse()
     venue = VenueCustomResponse()
+    image = serializers.SerializerMethodField()
+
+    def get_image(self, obj):
+        # Convert model object to dictionary if it's already a dict or model
+        image_name = getattr(obj, 'image', None)
+        if image_name:
+            return f"uploads/{image_name}"
+        return None
 
 
 class TicketCustomResponse(serializers.Serializer):
