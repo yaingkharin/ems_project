@@ -1,6 +1,6 @@
 from rest_framework import status
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.core.exceptions import ObjectDoesNotExist
@@ -17,12 +17,19 @@ from app.utils.permissions import CheckPermission
 class PaymentListCreateView(APIView):
     """
     Handles listing all payments and creating a new payment.
+    POST is public (AllowAny) so guests can initiate a payment.
+    GET requires authentication and CheckPermission.
     """
     permission_classes = [IsAuthenticated, CheckPermission]
     method_permissions = {
         'GET': 'all_payments',
         'POST': 'create_payments',
     }
+
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [AllowAny()]
+        return super().get_permissions()
 
     @swagger_auto_schema(
         operation_description="Retrieve a list of all payments.",
@@ -224,11 +231,17 @@ class CheckBakongStatusView(APIView):
     """
     Checks Bakong payment status by md5 hash (sent in POST body).
     Mirrors the Express checkPayment endpoint.
+    POST is public (AllowAny) so the client can poll status without a token.
     """
     permission_classes = [IsAuthenticated, CheckPermission]
     method_permissions = {
         'POST': 'view_payments',
     }
+
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [AllowAny()]
+        return super().get_permissions()
 
     @swagger_auto_schema(
         operation_description="Check Bakong payment status. Sends the md5 hash to the Bakong API gateway.",

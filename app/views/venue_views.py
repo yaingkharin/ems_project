@@ -1,6 +1,6 @@
 from rest_framework import status
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
@@ -19,6 +19,11 @@ class VenueListCreateView(APIView):
         'GET': 'all_venues',
         'POST': 'create_venues',
     }
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return super().get_permissions()
 
     @swagger_auto_schema(
         operation_description="Retrieve a list of all venues.",
@@ -57,6 +62,11 @@ class VenueRetrieveUpdateDestroyView(APIView):
         'DELETE': 'delete_venues',
     }
 
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return super().get_permissions()
+
     @swagger_auto_schema(
         operation_description="Retrieve a single venue by ID.",
         responses={200: VenueResponse, 404: "Not Found"}
@@ -93,7 +103,7 @@ class VenueRetrieveUpdateDestroyView(APIView):
 
 
 class PaginatedVenueListView(APIView):
-    permission_classes = [IsAuthenticated, CheckPermission]
+    permission_classes = [AllowAny]
     method_permissions = {
         'POST': 'all_venues',
     }

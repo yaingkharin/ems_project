@@ -1,7 +1,7 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
@@ -23,6 +23,11 @@ class EventListCreateView(APIView):
         'GET': 'all_events',
         'POST': 'create_events',
     }
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return super().get_permissions()
 
     @swagger_auto_schema(
         operation_description="Retrieve a list of all events.",
@@ -68,6 +73,11 @@ class EventRetrieveUpdateDestroyView(APIView):
         'PUT': 'edit_events',
         'DELETE': 'delete_events',
     }
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return super().get_permissions()
 
     @swagger_auto_schema(
         operation_description="Retrieve a single event by ID.",
@@ -120,7 +130,7 @@ class PaginatedEventListView(APIView):
     """
     Handles retrieving a paginated list of events with optional filtering and searching.
     """
-    permission_classes = [IsAuthenticated, CheckPermission]
+    permission_classes = [AllowAny]
     method_permissions = {
         'POST': 'all_events',
     }

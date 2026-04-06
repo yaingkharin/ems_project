@@ -1,7 +1,7 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
@@ -23,6 +23,11 @@ class CategoryListCreateView(APIView):
         'GET': 'all_categories',
         'POST': 'create_categories',
     }
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return super().get_permissions()
 
     @swagger_auto_schema(
         operation_description="Retrieve a list of all categories.", # Fixed description
@@ -65,6 +70,11 @@ class CategoryRetrieveUpdateDestroyView(APIView):
         'PUT': 'edit_categories',
         'DELETE': 'delete_categories',
     }
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return super().get_permissions()
 
     @swagger_auto_schema(
         operation_description="Retrieve a single category by ID.", # Fixed description
@@ -114,7 +124,7 @@ class CategoryRetrieveUpdateDestroyView(APIView):
 
 
 class PaginatedCategoryListView(APIView): # Renamed to PaginatedCategoryListView
-    permission_classes = [IsAuthenticated, CheckPermission]
+    permission_classes = [AllowAny]
     method_permissions = {
         'POST': 'all_categories',
     }
