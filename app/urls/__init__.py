@@ -8,7 +8,7 @@ from .venue_urls import urlpatterns as venue_urls
 from .event_urls import urlpatterns as event_urls
 from .category_urls import urlpatterns as category_urls
 from .payment_urls import urlpatterns as payment_urls
-from .invoice_urls import urlpatterns as invoice_urls
+from .event_ticket_urls import urlpatterns as event_ticket_urls
 from .checkin_urls import urlpatterns as checkin_urls
 from .event_registration_urls import urlpatterns as event_registration_urls
 from .ticket_urls import urlpatterns as ticket_urls
@@ -27,7 +27,7 @@ urlpatterns = (
     event_urls +
     category_urls +
     payment_urls +
-    invoice_urls +
+    event_ticket_urls +
     checkin_urls +
     event_registration_urls +
     ticket_urls +

@@ -8,7 +8,7 @@ from .event import Event
 from .ticket import Ticket
 from .booking import Booking
 from .payment import Payment
-from .invoice import Invoice
+from .event_ticket import EventTicket
 from .checkin import Checkin
 from .event_registration import EventRegistration
 from .user_profile import UserProfile

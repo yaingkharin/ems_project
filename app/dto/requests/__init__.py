@@ -5,7 +5,7 @@ from .checkin_request import CreateCheckinRequest, UpdateCheckinRequest
 from .customer_request import CreateCustomerRequest, UpdateCustomerRequest
 from .event_request import CreateEventRequest, UpdateEventRequest
 from .event_registration_request import CreateEventRegistrationRequest, UpdateEventRegistrationRequest
-from .invoice_request import CreateInvoiceRequest, UpdateInvoiceRequest
+from .event_ticket_request import CreateEventTicketRequest, UpdateEventTicketRequest
 from .pagination_request import PaginationRequest
 from .payment_request import CreatePaymentRequest, UpdatePaymentRequest
 from .permission_request import CreatePermissionRequest, UpdatePermissionRequest

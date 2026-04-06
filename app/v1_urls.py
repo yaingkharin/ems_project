@@ -44,7 +44,7 @@ urlpatterns = [
         path('tickets/', include('app.urls.ticket_urls')),
         path('bookings/', include('app.urls.booking_urls')),
         path('payments/', include('app.urls.payment_urls')),
-        path('invoices/', include('app.urls.invoice_urls')),
+        path('event-tickets/', include('app.urls.event_ticket_urls')),
         path('checkins/', include('app.urls.checkin_urls')),
         path('event-registrations/', include('app.urls.event_registration_urls')),
         path('user-profiles/', include('app.urls.user_profile_urls')),

@@ -100,12 +100,12 @@ def seed_permissions():
         {'name': 'edit_payments', 'display_name': 'Edit Payments', 'group': 'Payments', 'sort': 4},
         {'name': 'delete_payments', 'display_name': 'Delete Payments', 'group': 'Payments', 'sort': 5},
 
-        # Invoice Management Permissions
-        {'name': 'all_invoices', 'display_name': 'All Invoices', 'group': 'Invoices', 'sort': 1},
-        {'name': 'view_invoices', 'display_name': 'View Invoices', 'group': 'Invoices', 'sort': 2},
-        {'name': 'create_invoices', 'display_name': 'Create Invoices', 'group': 'Invoices', 'sort': 3},
-        {'name': 'edit_invoices', 'display_name': 'Edit Invoices', 'group': 'Invoices', 'sort': 4},
-        {'name': 'delete_invoices', 'display_name': 'Delete Invoices', 'group': 'Invoices', 'sort': 5},
+        # Event Ticket Management Permissions
+        {'name': 'all_event_tickets', 'display_name': 'All Event Tickets', 'group': 'Event Tickets', 'sort': 1},
+        {'name': 'view_event_tickets', 'display_name': 'View Event Tickets', 'group': 'Event Tickets', 'sort': 2},
+        {'name': 'create_event_tickets', 'display_name': 'Create Event Tickets', 'group': 'Event Tickets', 'sort': 3},
+        {'name': 'edit_event_tickets', 'display_name': 'Edit Event Tickets', 'group': 'Event Tickets', 'sort': 4},
+        {'name': 'delete_event_tickets', 'display_name': 'Delete Event Tickets', 'group': 'Event Tickets', 'sort': 5},
 
         # Checkin Management Permissions
         {'name': 'all_checkins', 'display_name': 'All Checkins', 'group': 'Checkins', 'sort': 1},
