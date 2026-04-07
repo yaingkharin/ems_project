@@ -201,8 +201,16 @@ class PaginatedBookingListView(APIView):
 
         try:
             paginated_data = BookingService.get_paginated_bookings(validated_data)
+            items = paginated_data['items']
+            response_serializer = BookingResponse(items, many=True)
+
             return api_response(
-                data=paginated_data,
+                data={
+                    'data': response_serializer.data,
+                    'total': paginated_data['total'],
+                    'page': paginated_data['page'],
+                    'limit': paginated_data['limit']
+                },
                 message="Paginated Bookings retrieved successfully."
             )
         except Exception as e:
