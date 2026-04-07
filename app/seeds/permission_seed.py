@@ -127,6 +127,10 @@ def seed_permissions():
         {'name': 'create_user_profiles', 'display_name': 'Create User Profiles', 'group': 'User Profiles', 'sort': 3},
         {'name': 'edit_user_profiles', 'display_name': 'Edit User Profiles', 'group': 'User Profiles', 'sort': 4},
         {'name': 'delete_user_profiles', 'display_name': 'Delete User Profiles', 'group': 'User Profiles', 'sort': 5},
+
+        # Report Management Permissions
+        {'name': 'all_reports', 'display_name': 'All Reports', 'group': 'Reports', 'sort': 1},
+        {'name': 'view_reports', 'display_name': 'View Reports', 'group': 'Reports', 'sort': 2},
     ]
 
     for perm_data in permissions_data:

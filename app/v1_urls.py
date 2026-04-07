@@ -49,5 +49,6 @@ urlpatterns = [
         path('event-registrations/', include('app.urls.event_registration_urls')),
         path('user-profiles/', include('app.urls.user_profile_urls')),
         path('customers/', include('app.urls.customer_urls')),
+        path('reports/', include('app.urls.report_urls')),
     ])),
 ]
