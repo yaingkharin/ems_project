@@ -5,9 +5,9 @@ class CreateCheckinRequest(serializers.Serializer):
     """
     Serializer for creating a new check-in.
     """
-    booking_id = serializers.IntegerField()
+    booking_id = serializers.IntegerField(required=False)
     ticket_code = serializers.CharField(max_length=255)
-    status = serializers.ChoiceField(choices=['checked_in', 'not_checked'], default='not_checked')
+    status = serializers.ChoiceField(choices=['SUCCESS', 'ALREADY_USED', 'INVALID'], default='SUCCESS')
 
 
 class UpdateCheckinRequest(serializers.Serializer):
@@ -16,4 +16,18 @@ class UpdateCheckinRequest(serializers.Serializer):
     """
     booking_id = serializers.IntegerField(required=False)
     ticket_code = serializers.CharField(max_length=255, required=False)
-    status = serializers.ChoiceField(choices=['checked_in', 'not_checked'], required=False)
+    status = serializers.ChoiceField(choices=['SUCCESS', 'ALREADY_USED', 'INVALID'], required=False)
+
+
+class ValidateTicketRequest(serializers.Serializer):
+    """
+    Serializer for validating an event ticket by its code.
+    """
+    ticket_code = serializers.CharField(max_length=255)
+
+
+class ConfirmCheckinRequest(serializers.Serializer):
+    """
+    Serializer for confirming a check-in.
+    """
+    ticket_code = serializers.CharField(max_length=255)

@@ -4,7 +4,12 @@ from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-from app.dto.requests.checkin_request import CreateCheckinRequest, UpdateCheckinRequest
+from app.dto.requests.checkin_request import (
+    CreateCheckinRequest, 
+    UpdateCheckinRequest, 
+    ValidateTicketRequest, 
+    ConfirmCheckinRequest
+)
 from app.dto.responses.checkin_response import CheckinResponse
 from app.services.checkin_service import CheckinService
 from app.dto.requests.pagination_request import PaginationRequest
@@ -166,3 +171,79 @@ class PaginatedCheckinListView(APIView):
                 success=False,
                 status_code=status.HTTP_400_BAD_REQUEST
             )
+
+
+class ValidateTicketView(APIView):
+    """
+    Handles validating a ticket code for the check-in scanner UI.
+    """
+    permission_classes = [IsAuthenticated, CheckPermission]
+    method_permissions = {
+        'POST': 'create_checkins',
+    }
+
+    @swagger_auto_schema(
+        operation_description="Validate a ticket code and return details.",
+        request_body=ValidateTicketRequest,
+        responses={
+            200: "Ticket validated successfully",
+            400: "Bad Request"
+        }
+    )
+    def post(self, request):
+        serializer = ValidateTicketRequest(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        ticket_code = serializer.validated_data['ticket_code']
+
+        try:
+            result = CheckinService.validate_ticket(ticket_code)
+            return api_response(
+                data=result,
+                message="Ticket validated successfully."
+            )
+        except Exception as e:
+            return api_response(
+                message=str(e),
+                success=False,
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+
+class ConfirmCheckinView(APIView):
+    """
+    Handles confirming a check-in and logging the attempt.
+    """
+    permission_classes = [IsAuthenticated, CheckPermission]
+    method_permissions = {
+        'POST': 'create_checkins',
+    }
+
+    @swagger_auto_schema(
+        operation_description="Confirm a check-in using a ticket code.",
+        request_body=ConfirmCheckinRequest,
+        responses={
+            200: "Check-in successful",
+            400: "Bad Request"
+        }
+    )
+    def post(self, request):
+        serializer = ConfirmCheckinRequest(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        ticket_code = serializer.validated_data['ticket_code']
+
+        try:
+            result = CheckinService.confirm_checkin(ticket_code)
+            if result.get('success'):
+                return api_response(message=result.get('message'))
+            else:
+                return api_response(
+                    message=result.get('message'),
+                    success=False,
+                    status_code=status.HTTP_400_BAD_REQUEST
+                )
+        except Exception as e:
+            return api_response(
+                message=str(e),
+                success=False,
+                status_code=status.HTTP_400_BAD_REQUEST
+            )

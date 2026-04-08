@@ -8,14 +8,15 @@ class Checkin(models.Model):
     Represents a check-in record for a booking.
     """
     STATUS_CHOICES = [
-        ('checked_in', 'Checked In'),
-        ('not_checked', 'Not Checked'),
+        ('SUCCESS', 'Success'),
+        ('ALREADY_USED', 'Already Used'),
+        ('INVALID', 'Invalid'),
     ]
 
-    booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='checkins')
+    booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='checkins', null=True, blank=True)
     ticket_code = models.CharField(max_length=255, null=True, blank=True)
     checkin_time = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='not_checked')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='SUCCESS')
     is_deleted = models.BooleanField(default=False)
     deleted_at = models.DateTimeField(null=True, blank=True)
 

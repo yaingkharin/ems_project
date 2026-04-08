@@ -5,6 +5,7 @@ from django.db.models import Q
 from django.utils import timezone
 from app.models.checkin import Checkin
 from app.models.booking import Booking
+from app.models.event_ticket import EventTicket
 from app.dto.responses.checkin_response import CheckinResponse
 
 
@@ -18,12 +19,72 @@ class CheckinService:
         """
         Creates a new check-in.
         """
-        booking = Booking.objects.get(id=request_data.pop('booking_id'))
+        booking_id = request_data.pop('booking_id', None)
+        booking = Booking.objects.get(id=booking_id) if booking_id else None
         checkin = Checkin.objects.create(
             booking=booking,
             **request_data
         )
         return checkin
+
+    @staticmethod
+    def validate_ticket(ticket_code: str) -> dict:
+        """
+        Validates an event ticket by its code.
+        Returns the details necessary for the check-in UI and logs invalid attempts if necessary.
+        """
+        try:
+            ticket = EventTicket.objects.select_related('booking__customer', 'booking__event', 'booking__ticket').get(ticket_code=ticket_code)
+            booking = ticket.booking
+            customer_name = f"{booking.customer.first_name} {booking.customer.last_name}" if booking and booking.customer else "Unknown"
+            event_name = booking.event.event_name if booking and booking.event else "Unknown"
+            ticket_type = booking.ticket.ticket_name if booking and booking.ticket else "-"
+            booking_id_val = booking.id if booking else None
+            
+            status = 'VALID' if ticket.status == 'UNUSED' else 'ALREADY_USED'
+
+            return {
+                "ticket_code": ticket_code,
+                "customer_name": customer_name,
+                "event_name": event_name,
+                "ticket_type": ticket_type,
+                "booking_id": booking_id_val,
+                "status": status
+            }
+        except ObjectDoesNotExist:
+            return {
+                "ticket_code": ticket_code,
+                "customer_name": "Unknown",
+                "event_name": "Unknown",
+                "ticket_type": "-",
+                "booking_id": None,
+                "status": "INVALID"
+            }
+
+    @staticmethod
+    def confirm_checkin(ticket_code: str) -> dict:
+        """
+        Confirms a check-in by updating the event ticket status and logging the attempt.
+        """
+        try:
+            ticket = EventTicket.objects.get(ticket_code=ticket_code)
+            
+            if ticket.status == 'USED':
+                Checkin.objects.create(ticket_code=ticket_code, booking=ticket.booking, status='ALREADY_USED')
+                return {"success": False, "message": "Ticket is already used."}
+            
+            # Update ticket status
+            ticket.status = 'USED'
+            ticket.save()
+            
+            # Log successful check-in
+            Checkin.objects.create(ticket_code=ticket_code, booking=ticket.booking, status='SUCCESS')
+            
+            return {"success": True, "message": "Check-in successful."}
+        except ObjectDoesNotExist:
+            # Log invalid check-in attempt
+            Checkin.objects.create(ticket_code=ticket_code, booking=None, status='INVALID')
+            return {"success": False, "message": "Invalid ticket code."}
 
     @staticmethod
     def get_checkin_by_id(checkin_id: int) -> Optional[Checkin]:
