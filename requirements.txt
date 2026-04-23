@@ -69,3 +69,6 @@ Pillow
 
 # QR Code generation
 qrcode==8.0
+
+# Background task scheduling
+django-apscheduler==0.7.0

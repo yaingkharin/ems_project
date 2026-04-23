@@ -12,11 +12,22 @@ class EventResponse(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
     start_time = serializers.TimeField(format='%H:%M')
     end_time = serializers.TimeField(format='%H:%M')
+    status = serializers.SerializerMethodField()
 
     def get_image(self, obj):
         if obj.image:
             return f"uploads/{obj.image}"
         return None
+
+    def get_status(self, obj):
+        """
+        Returns the dynamically computed status:
+          - 'cancelled'  → always kept if stored in DB
+          - 'upcoming'   → today < event_date, or event hasn't started yet
+          - 'ongoing'    → today == event_date and within start/end time
+          - 'completed'  → event_date passed or end_time exceeded
+        """
+        return obj.get_computed_status()
 
     class Meta:
         from app.models.event import Event

@@ -29,8 +29,9 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'drf_yasg',
-    'app', # Our application
+    'app.apps.AppApplicationConfig', # Our application
     'django_filters', # New: For filtering API views
+    'django_apscheduler', # Auto-scheduler for event status updates
 ]
 
 MIDDLEWARE = [
@@ -105,7 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Phnom_Penh'
 
 USE_I18N = True
 
