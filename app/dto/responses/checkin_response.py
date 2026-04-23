@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from app.dto.responses.booking_response import BookingResponse
+from app.models.checkin import Checkin
 
 
 class CheckinResponse(serializers.ModelSerializer):
@@ -11,7 +12,6 @@ class CheckinResponse(serializers.ModelSerializer):
     event_name = serializers.SerializerMethodField()
 
     class Meta:
-        from app.models.checkin import Checkin
         model = Checkin
         fields = [
             'id', 'booking', 'ticket_code', 'customer_name', 'event_name', 
@@ -20,7 +20,10 @@ class CheckinResponse(serializers.ModelSerializer):
 
     def get_customer_name(self, obj):
         if obj.booking and obj.booking.customer:
-            return f"{obj.booking.customer.first_name} {obj.booking.customer.last_name}"
+            first_name = obj.booking.customer.first_name or ""
+            last_name = obj.booking.customer.last_name or ""
+            name = f"{first_name} {last_name}".strip()
+            return name if name else "Unknown"
         return "Unknown"
 
     def get_event_name(self, obj):

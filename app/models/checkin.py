@@ -24,7 +24,8 @@ class Checkin(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Check-in for Booking {self.booking.id} - {self.ticket_code}"
+        booking_id = self.booking.id if self.booking else "No Booking"
+        return f"Check-in for Booking {booking_id} - {self.ticket_code}"
 
     class Meta:
         db_table = "checkins"
