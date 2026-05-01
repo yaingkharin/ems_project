@@ -150,6 +150,7 @@ class EventService:
         Use with caution - this action cannot be undone.
         """
         try:
+            # Use direct Manager to find even soft-deleted items
             event = Event.objects.get(id=event_id)
             event.delete()  # Hard delete
             return True

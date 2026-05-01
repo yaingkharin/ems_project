@@ -9,6 +9,17 @@ from app.dto.responses.customer_response import CustomerResponse
 
 class CustomerService:
     @staticmethod
+    def _resolve_fk(value, model):
+        if value is None:
+            return None
+        if isinstance(value, model):
+            return value
+        try:
+            return model.objects.get(pk=value, is_deleted=False)
+        except ObjectDoesNotExist:
+            return None
+
+    @staticmethod
     def create_customer(request_data: dict) -> dict:
         customer = Customer.objects.create(
             first_name=request_data.get('first_name'),
@@ -49,10 +60,24 @@ class CustomerService:
     @staticmethod
     def delete_customer(customer_id: int) -> bool:
         try:
-            customer = Customer.objects.get(id=customer_id)
+            customer = Customer.objects.get(id=customer_id, is_deleted=False)
             customer.is_deleted = True
             customer.deleted_at = timezone.now()
             customer.save()
+            return True
+        except ObjectDoesNotExist:
+            return False
+
+    @staticmethod
+    def force_delete_customer(customer_id: int) -> bool:
+        """
+        Permanently delete a customer from the database.
+        Use with caution - this action cannot be undone.
+        """
+        try:
+            # Use direct Manager to find even soft-deleted items
+            customer = Customer.objects.get(id=customer_id)
+            customer.delete()  # Hard delete
             return True
         except ObjectDoesNotExist:
             return False

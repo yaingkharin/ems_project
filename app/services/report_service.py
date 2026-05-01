@@ -194,8 +194,6 @@ class ReportService:
         limit = int(params.get('limit', 10))
         filters = params.get('filters', {})
 
-        # Start from Events to potentially show events with 0 sales/checkins if needed,
-        # but here we join via bookings for sales data.
         queryset = Event.objects.filter(is_deleted=False)
 
         if 'event_id' in filters and filters['event_id']:
@@ -206,10 +204,10 @@ class ReportService:
             queryset = queryset.filter(event_date__lte=filters['end_date'])
 
         # Annotate sold vs checked in
-        # Note: tickets_checked_in counts check-in records related to this event's bookings
+        # FIX: Using 'SUCCESS' status as defined in Checkin model
         report_qs = queryset.annotate(
-            tickets_sold=Sum('bookings__quantity'),
-            tickets_checked_in=Count('bookings__checkins', filter=Q(bookings__checkins__status='checked_in', bookings__checkins__is_deleted=False))
+            tickets_sold=Sum('bookings__quantity', filter=Q(bookings__status='confirmed', bookings__is_deleted=False)),
+            tickets_checked_in=Count('bookings__checkins', filter=Q(bookings__checkins__status='SUCCESS', bookings__checkins__is_deleted=False))
         ).values('id', 'event_name', 'tickets_sold', 'tickets_checked_in')
 
         paginator = Paginator(report_qs, limit)

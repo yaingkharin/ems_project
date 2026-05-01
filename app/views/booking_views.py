@@ -11,6 +11,9 @@ from app.dto.requests.pagination_request import PaginationRequest
 
 from app.utils.api_response import api_response
 from app.utils.permissions import CheckPermission
+from django.http import HttpResponse, FileResponse
+from app.models.event_ticket import EventTicket
+from app.utils.pdf_generator import generate_ticket_pdf
 
 
 class BookingListCreateView(APIView):
@@ -217,5 +220,52 @@ class PaginatedBookingListView(APIView):
             return api_response(
                 message=str(e),
                 success=False,
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+
+class BookingTicketDownloadView(APIView):
+    """
+    Handles downloading the PDF ticket for a specific booking.
+    """
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="Download the PDF ticket for a booking.",
+        responses={
+            200: "PDF File Stream",
+            404: "Not Found",
+            400: "Bad Request"
+        }
+    )
+    def get(self, request, pk):
+        booking = BookingService.get_booking_by_id(pk)
+        if not booking:
+            return api_response(message="Booking not found.", success=False, status_code=status.HTTP_404_NOT_FOUND)
+            
+        # BUG FIX: Only allow download if booking is confirmed (paid)
+        if booking.status != 'confirmed':
+            return api_response(
+                message="Your booking is not confirmed yet. Please complete your payment to download the ticket.",
+                success=False,
+                status_code=status.HTTP_403_FORBIDDEN
+            )
+
+        event_tickets = EventTicket.objects.filter(booking_id=pk)
+        if not event_tickets.exists():
+             return api_response(message="No tickets found for this booking.", success=False, status_code=status.HTTP_404_NOT_FOUND)
+
+        try:
+            pdf_buffer = generate_ticket_pdf(booking, event_tickets)
+            return FileResponse(
+                pdf_buffer, 
+                as_attachment=True, 
+                filename=f'Ticket-{booking.id}.pdf',
+                content_type='application/pdf'
+            )
+        except Exception as e:
+            return api_response(
+                message=f"Failed to generate PDF: {str(e)}", 
+                success=False, 
                 status_code=status.HTTP_400_BAD_REQUEST
             )

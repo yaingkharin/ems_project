@@ -72,3 +72,6 @@ qrcode==8.0
 
 # Background task scheduling
 django-apscheduler==0.7.0
+
+# PDF Generation
+reportlab==4.3.1

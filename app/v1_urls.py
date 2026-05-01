@@ -3,6 +3,7 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from app.views.auth_views import RegisterView, LoginView, LogoutView, GoogleLoginView
+from app.views.dashboard_views import DashboardStatsView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -28,6 +29,9 @@ urlpatterns = [
          name='schema-redoc'),
 
     path('v1/', include([
+        path('dashboard/', include([
+            path('stats/', DashboardStatsView.as_view(), name='dashboard-stats'),
+        ])),
         path('auth/', include([
             path('register/', RegisterView.as_view(), name='register'),
             path('login/', LoginView.as_view(), name='login'),

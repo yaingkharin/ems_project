@@ -9,8 +9,22 @@ from app.dto.responses.ticket_response import TicketResponse
 
 class TicketService:
     @staticmethod
+    def _resolve_fk(value, model):
+        if value is None:
+            return None
+        if isinstance(value, model):
+            return value
+        try:
+            return model.objects.get(pk=value, is_deleted=False)
+        except ObjectDoesNotExist:
+            return None
+
+    @staticmethod
     def create_ticket(request_data: dict) -> Ticket:
-        event = Event.objects.get(id=request_data.pop('event_id'))
+        event = TicketService._resolve_fk(request_data.pop('event_id', None), Event)
+        if not event:
+            raise ValueError('Valid event_id is required')
+            
         ticket = Ticket.objects.create(
             event=event,
             **request_data
@@ -33,7 +47,9 @@ class TicketService:
         try:
             ticket = Ticket.objects.get(id=ticket_id, is_deleted=False)
             if 'event_id' in request_data:
-                ticket.event = Event.objects.get(id=request_data.pop('event_id'))
+                event = TicketService._resolve_fk(request_data.pop('event_id'), Event)
+                if event:
+                    ticket.event = event
             
             for key, value in request_data.items():
                 setattr(ticket, key, value)
@@ -61,6 +77,7 @@ class TicketService:
         Use with caution - this action cannot be undone.
         """
         try:
+            # Use direct Manager to find even soft-deleted items
             ticket = Ticket.objects.get(id=ticket_id)
             ticket.delete()  # Hard delete
             return True

@@ -102,8 +102,8 @@ class PaymentService:
         )
 
         # Mark booking as confirmed immediately since it's a cash payment
-        booking.status = 'confirmed'
-        booking.save(update_fields=['status', 'updated_at'])
+        from app.services.booking_service import BookingService
+        BookingService.update_booking(booking.id, {'status': 'confirmed'})
 
         return {"payment": payment}
 
@@ -293,11 +293,10 @@ class PaymentService:
                 payment.toAccountId = data.get('data', {}).get('toAccountId')
                 payment.save()
 
-                # Confirm the booking
+                # Confirm the booking via BookingService to handle stock logic
                 booking = payment.booking
-                if booking and booking.status != 'confirmed':
-                    booking.status = 'confirmed'
-                    booking.save(update_fields=['status', 'updated_at'])
+                from app.services.booking_service import BookingService
+                BookingService.update_booking(booking.id, {'status': 'confirmed'})
 
             return {
                 "status": "COMPLETED",

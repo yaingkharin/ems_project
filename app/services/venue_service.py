@@ -10,6 +10,17 @@ from app.dto.responses.venue_response import VenueResponse
 
 class VenueService:
     @staticmethod
+    def _resolve_fk(value, model):
+        if value is None:
+            return None
+        if isinstance(value, model):
+            return value
+        try:
+            return model.objects.get(pk=value, is_deleted=False)
+        except ObjectDoesNotExist:
+            return None
+
+    @staticmethod
     def create_venue(request_data: dict) -> VenueResponse:
         venue = Venue.objects.create(
             name=request_data['name'],
@@ -63,6 +74,7 @@ class VenueService:
         Use with caution - this action cannot be undone.
         """
         try:
+            # Use direct Manager to find even soft-deleted items
             venue = Venue.objects.get(venue_id=venue_id)
             venue.delete()  # Hard delete
             return True

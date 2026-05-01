@@ -128,7 +128,7 @@ class CheckinService:
         Soft deletes a check-in by its ID.
         """
         try:
-            checkin = Checkin.objects.get(id=checkin_id)
+            checkin = Checkin.objects.get(id=checkin_id, is_deleted=False)
             checkin.is_deleted = True
             checkin.deleted_at = timezone.now()
             checkin.save()
@@ -143,6 +143,7 @@ class CheckinService:
         Use with caution - this action cannot be undone.
         """
         try:
+            # Use direct Manager to find even soft-deleted items
             checkin = Checkin.objects.get(id=checkin_id)
             checkin.delete()  # Hard delete
             return True

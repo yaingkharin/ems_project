@@ -14,7 +14,10 @@ class EventRegistrationService:
             return None
         if isinstance(value, model):
             return value
-        return model.objects.get(pk=value)
+        try:
+            return model.objects.get(pk=value, is_deleted=False)
+        except ObjectDoesNotExist:
+            return None
 
     @staticmethod
     def get_all_event_registrations():
@@ -65,14 +68,14 @@ class EventRegistrationService:
     @staticmethod
     @transaction.atomic
     def delete_event_registration(pk: int):
-        reg = EventRegistrationService.get_event_registration_by_id(pk)
-        if not reg:
+        try:
+            reg = EventRegistration.objects.get(pk=pk, is_deleted=False)
+            reg.is_deleted = True
+            reg.deleted_at = timezone.now()
+            reg.save()
+            return True
+        except ObjectDoesNotExist:
             return False
-        # Soft delete instead of hard delete
-        reg.is_deleted = True
-        reg.deleted_at = timezone.now()
-        reg.save()
-        return True
 
     @staticmethod
     @transaction.atomic
@@ -81,11 +84,13 @@ class EventRegistrationService:
         Permanently delete an event registration from the database.
         Use with caution - this action cannot be undone.
         """
-        reg = EventRegistrationService.get_event_registration_by_id(pk)
-        if not reg:
+        try:
+            # Use direct Manager to find even soft-deleted items
+            reg = EventRegistration.objects.get(pk=pk)
+            reg.delete()  # Hard delete
+            return True
+        except ObjectDoesNotExist:
             return False
-        reg.delete()  # Hard delete
-        return True
 
     @staticmethod
     def get_paginated_event_registrations(params: Dict[str, Any]):

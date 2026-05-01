@@ -23,7 +23,10 @@ class EventTicketService:
             return None
         if isinstance(value, model):
             return value
-        return model.objects.get(pk=value)
+        try:
+            return model.objects.get(pk=value, is_deleted=False)
+        except ObjectDoesNotExist:
+            return None
 
     @staticmethod
     def get_all_event_tickets():
@@ -45,6 +48,12 @@ class EventTicketService:
         """
         # Resolve foreign keys if needed
         booking = EventTicketService._resolve_fk(validated_data.get('booking'), Booking)
+
+        # Check if tickets already exist for this booking to prevent redundant generation
+        if booking:
+            existing_tickets = EventTicket.objects.filter(booking=booking, is_deleted=False)
+            if existing_tickets.count() >= booking.quantity:
+                return existing_tickets.first()
 
         ticket_code = validated_data.get('ticket_code')
         if not ticket_code:
@@ -102,13 +111,14 @@ class EventTicketService:
     @transaction.atomic
     def delete_event_ticket(pk: int):
         """Soft delete the event ticket and return True on success, False if not found."""
-        event_ticket = EventTicketService.get_event_ticket_by_id(pk)
-        if not event_ticket:
+        try:
+            event_ticket = EventTicket.objects.get(pk=pk, is_deleted=False)
+            event_ticket.is_deleted = True
+            event_ticket.deleted_at = timezone.now()
+            event_ticket.save()
+            return True
+        except ObjectDoesNotExist:
             return False
-        event_ticket.is_deleted = True
-        event_ticket.deleted_at = timezone.now()
-        event_ticket.save()
-        return True
 
     @staticmethod
     @transaction.atomic
@@ -116,11 +126,13 @@ class EventTicketService:
         """
         Permanently delete an event ticket from the database.
         """
-        event_ticket = EventTicketService.get_event_ticket_by_id(pk)
-        if not event_ticket:
+        try:
+            # Use direct Manager to find even soft-deleted items
+            event_ticket = EventTicket.objects.get(pk=pk)
+            event_ticket.delete()  # Hard delete
+            return True
+        except ObjectDoesNotExist:
             return False
-        event_ticket.delete()  # Hard delete
-        return True
 
     @staticmethod
     def get_paginated_event_tickets(params: Dict[str, Any]):

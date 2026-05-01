@@ -8,6 +8,17 @@ from app.dto.responses.category_response import CategoryResponse # Fixed import
 
 class CategoryService:
     @staticmethod
+    def _resolve_fk(value, model):
+        if value is None:
+            return None
+        if isinstance(value, model):
+            return value
+        try:
+            return model.objects.get(pk=value, is_deleted=False)
+        except ObjectDoesNotExist:
+            return None
+
+    @staticmethod
     def create_category(request_data: dict) -> Category: # Return type changed to Category model
         category = Category.objects.create(
             category_name=request_data['category_name'],
@@ -55,6 +66,7 @@ class CategoryService:
         Use with caution - this action cannot be undone.
         """
         try:
+            # Use direct Manager to find even soft-deleted items
             category = Category.objects.get(id=id)
             category.delete()  # Hard delete
             return True
