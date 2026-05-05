@@ -5,9 +5,8 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-# Use the new DTO-named serializers
-from app.dto.requests.category_request import CreateCategoryRequest, UpdateCategoryRequest # Added UpdateCategoryRequest
-from app.dto.responses.category_response import CategoryResponse # Fixed import
+from app.dto.requests.category_request import CreateCategoryRequest, UpdateCategoryRequest
+from app.dto.responses.category_response import CategoryResponse
 
 from app.services.category_service import CategoryService
 from app.dto.requests.pagination_request import PaginationRequest
@@ -30,16 +29,16 @@ class CategoryListCreateView(APIView):
         return super().get_permissions()
 
     @swagger_auto_schema(
-        operation_description="Retrieve a list of all categories.", # Fixed description
+        operation_description="Retrieve a list of all categories.",
         responses={200: CategoryResponse(many=True)}
     )
     def get(self, request):
         all_categories = CategoryService.get_all_category()
-        serializer = CategoryResponse(all_categories, many=True) # Changed to use serializer
+        serializer = CategoryResponse(all_categories, many=True)
         return api_response(data=serializer.data, message="Categories retrieved successfully.")
 
     @swagger_auto_schema(
-        operation_description="Create a new category.", # Fixed description
+        operation_description="Create a new category.",
         request_body=CreateCategoryRequest,
         responses={
             201: CategoryResponse,
@@ -52,8 +51,8 @@ class CategoryListCreateView(APIView):
         validated_data = serializer.validated_data
 
         try:
-            category = CategoryService.create_category(validated_data) # Changed to return model
-            response_serializer = CategoryResponse(category) # Serialize model to DTO
+            category = CategoryService.create_category(validated_data)
+            response_serializer = CategoryResponse(category)
             return api_response(
                 data=response_serializer.data,
                 message="Category created successfully.",
@@ -77,7 +76,7 @@ class CategoryRetrieveUpdateDestroyView(APIView):
         return super().get_permissions()
 
     @swagger_auto_schema(
-        operation_description="Retrieve a single category by ID.", # Fixed description
+        operation_description="Retrieve a single category by ID.",
         responses={
             200: CategoryResponse,
             404: "Not Found"
@@ -86,13 +85,13 @@ class CategoryRetrieveUpdateDestroyView(APIView):
     def get(self, request, pk):
         category_by_id = CategoryService.get_category_by_id(pk)
         if category_by_id:
-            serializer = CategoryResponse(category_by_id) # Changed to use serializer
+            serializer = CategoryResponse(category_by_id)
             return api_response(data=serializer.data, message="Category retrieved successfully.")
         return api_response(message="Category not found.", success=False, status_code=status.HTTP_404_NOT_FOUND)
 
     @swagger_auto_schema(
-        operation_description="Update an existing category.", # Fixed description
-        request_body=UpdateCategoryRequest, # Changed to UpdateCategoryRequest
+        operation_description="Update an existing category.",
+        request_body=UpdateCategoryRequest,
         responses={
             200: CategoryResponse,
             400: "Bad Request",
@@ -100,18 +99,18 @@ class CategoryRetrieveUpdateDestroyView(APIView):
         }
     )
     def put(self, request, pk):
-        serializer = UpdateCategoryRequest(data=request.data) # Changed to UpdateCategoryRequest
+        serializer = UpdateCategoryRequest(data=request.data)
         serializer.is_valid(raise_exception=True)
         validated_data = serializer.validated_data
 
-        category = CategoryService.update_category(pk, validated_data) # Changed to return model
+        category = CategoryService.update_category(pk, validated_data)
         if category:
-            response_serializer = CategoryResponse(category) # Serialize model to DTO
+            response_serializer = CategoryResponse(category)
             return api_response(data=response_serializer.data, message="Category updated successfully.")
         return api_response(message="Category not found.", success=False, status_code=status.HTTP_404_NOT_FOUND)
 
     @swagger_auto_schema(
-        operation_description="Delete a category by ID.", # Fixed description
+        operation_description="Delete a category by ID.",
         responses={
             204: "No Content",
             404: "Not Found"
@@ -123,18 +122,18 @@ class CategoryRetrieveUpdateDestroyView(APIView):
         return api_response(message="Category not found.", success=False, status_code=status.HTTP_404_NOT_FOUND)
 
 
-class PaginatedCategoryListView(APIView): # Renamed to PaginatedCategoryListView
+class PaginatedCategoryListView(APIView):
     permission_classes = [AllowAny]
     method_permissions = {
         'POST': 'all_categories',
     }
 
     @swagger_auto_schema(
-        operation_description="Retrieve a paginated list of categories with optional filtering and searching using a POST request body.", # Fixed description
+        operation_description="Retrieve a paginated list of categories with optional filtering and searching using a POST request body.",
         request_body=PaginationRequest,
         responses={
             200: openapi.Response(
-                description="Paginated list of categories.", # Fixed description
+                description="Paginated list of categories.",
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
@@ -171,3 +170,35 @@ class PaginatedCategoryListView(APIView): # Renamed to PaginatedCategoryListView
                 success=False,
                 status_code=status.HTTP_400_BAD_REQUEST
             )
+
+
+class CategoryRestoreView(APIView):
+    permission_classes = [IsAuthenticated, CheckPermission]
+    method_permissions = {
+        'POST': 'restore_categories',
+    }
+
+    @swagger_auto_schema(
+        operation_description="Restore a soft-deleted category.",
+        responses={200: "Success", 404: "Not Found"}
+    )
+    def post(self, request, pk):
+        if CategoryService.restore_category(pk):
+            return api_response(message="Category restored successfully.")
+        return api_response(message="Category not found or not deleted.", success=False, status_code=status.HTTP_404_NOT_FOUND)
+
+
+class CategoryPermanentDeleteView(APIView):
+    permission_classes = [IsAuthenticated, CheckPermission]
+    method_permissions = {
+        'DELETE': 'force_delete_categories',
+    }
+
+    @swagger_auto_schema(
+        operation_description="Permanently delete a category from the database.",
+        responses={204: "No Content", 404: "Not Found"}
+    )
+    def delete(self, request, pk):
+        if CategoryService.force_delete_category(pk):
+            return api_response(message="Category permanently deleted.", status_code=status.HTTP_204_NO_CONTENT)
+        return api_response(message="Category not found.", success=False, status_code=status.HTTP_404_NOT_FOUND)

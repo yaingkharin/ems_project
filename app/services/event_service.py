@@ -158,6 +158,20 @@ class EventService:
             return False
 
     @staticmethod
+    def restore_event(event_id: int) -> bool:
+        """
+        Restore a soft-deleted event.
+        """
+        try:
+            event = Event.objects.get(id=event_id, is_deleted=True)
+            event.is_deleted = False
+            event.deleted_at = None
+            event.save()
+            return True
+        except ObjectDoesNotExist:
+            return False
+
+    @staticmethod
     def get_paginated_events(validated_data: dict) -> dict:
         """
         Retrieves a paginated list of events with optional filtering and searching.
@@ -169,7 +183,7 @@ class EventService:
         search = validated_data.get('search', None)
         filters = validated_data.get('filters', {})
 
-        queryset = Event.objects.filter(is_deleted=False)
+        queryset = Event.objects.filter(is_deleted=validated_data.get('is_deleted', False))
 
         if filters:
             queryset = queryset.filter(**filters)

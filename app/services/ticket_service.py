@@ -85,6 +85,20 @@ class TicketService:
             return False
 
     @staticmethod
+    def restore_ticket(ticket_id: int) -> bool:
+        """
+        Restore a soft-deleted ticket.
+        """
+        try:
+            ticket = Ticket.objects.get(id=ticket_id, is_deleted=True)
+            ticket.is_deleted = False
+            ticket.deleted_at = None
+            ticket.save()
+            return True
+        except ObjectDoesNotExist:
+            return False
+
+    @staticmethod
     def get_paginated_tickets(validated_data: dict) -> dict:
         page = validated_data.get('page', 1)
         limit = validated_data.get('limit', 10)
@@ -93,7 +107,7 @@ class TicketService:
         search = validated_data.get('search', None)
         filters = validated_data.get('filters', {})
 
-        queryset = Ticket.objects.filter(is_deleted=False)
+        queryset = Ticket.objects.filter(is_deleted=validated_data.get('is_deleted', False))
 
         if filters:
             queryset = queryset.filter(**filters)

@@ -74,6 +74,20 @@ class CategoryService:
             return False
 
     @staticmethod
+    def restore_category(id: int) -> bool:
+        """
+        Restore a soft-deleted category.
+        """
+        try:
+            category = Category.objects.get(id=id, is_deleted=True)
+            category.is_deleted = False
+            category.deleted_at = None
+            category.save()
+            return True
+        except ObjectDoesNotExist:
+            return False
+
+    @staticmethod
     def get_paginated_categories(validated_data: dict) -> dict:
         page = validated_data.get('page', 1)
         limit = validated_data.get('limit', 100)
@@ -82,7 +96,7 @@ class CategoryService:
         search = validated_data.get('search', None)
         filters = validated_data.get('filters', {})
 
-        queryset = Category.objects.filter(is_deleted=False)
+        queryset = Category.objects.filter(is_deleted=validated_data.get('is_deleted', False))
 
         if filters:
             queryset = queryset.filter(**filters)

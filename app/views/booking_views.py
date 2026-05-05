@@ -269,3 +269,35 @@ class BookingTicketDownloadView(APIView):
                 success=False, 
                 status_code=status.HTTP_400_BAD_REQUEST
             )
+
+
+class BookingRestoreView(APIView):
+    permission_classes = [IsAuthenticated, CheckPermission]
+    method_permissions = {
+        'POST': 'restore_bookings',
+    }
+
+    @swagger_auto_schema(
+        operation_description="Restore a soft-deleted booking.",
+        responses={200: "Success", 404: "Not Found"}
+    )
+    def post(self, request, pk):
+        if BookingService.restore_booking(pk):
+            return api_response(message="Booking restored successfully.")
+        return api_response(message="Booking not found or not deleted.", success=False, status_code=status.HTTP_404_NOT_FOUND)
+
+
+class BookingPermanentDeleteView(APIView):
+    permission_classes = [IsAuthenticated, CheckPermission]
+    method_permissions = {
+        'DELETE': 'force_delete_bookings',
+    }
+
+    @swagger_auto_schema(
+        operation_description="Permanently delete a booking from the database.",
+        responses={204: "No Content", 404: "Not Found"}
+    )
+    def delete(self, request, pk):
+        if BookingService.force_delete_booking(pk):
+            return api_response(message="Booking permanently deleted.", status_code=status.HTTP_204_NO_CONTENT)
+        return api_response(message="Booking not found.", success=False, status_code=status.HTTP_404_NOT_FOUND)

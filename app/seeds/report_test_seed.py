@@ -23,11 +23,11 @@ def seed_report_data():
     # 2. Venues
     venue_hall, _ = Venue.objects.get_or_create(
         name="Grand Hall", 
-        defaults={'address': "123 Main St", 'capacity': 500}
+        defaults={'address': "123 Main St"}
     )
     venue_stadium, _ = Venue.objects.get_or_create(
         name="City Stadium", 
-        defaults={'address': "456 Stadium Way", 'capacity': 5000}
+        defaults={'address': "456 Stadium Way"}
     )
 
     # 3. Events

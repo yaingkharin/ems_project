@@ -75,9 +75,23 @@ class CustomerService:
         Use with caution - this action cannot be undone.
         """
         try:
-            # Use direct Manager to find even soft-deleted items
+            # Use filter to find both active and soft-deleted customers
             customer = Customer.objects.get(id=customer_id)
             customer.delete()  # Hard delete
+            return True
+        except ObjectDoesNotExist:
+            return False
+
+    @staticmethod
+    def restore_customer(customer_id: int) -> bool:
+        """
+        Restore a soft-deleted customer.
+        """
+        try:
+            customer = Customer.objects.get(id=customer_id, is_deleted=True)
+            customer.is_deleted = False
+            customer.deleted_at = None
+            customer.save()
             return True
         except ObjectDoesNotExist:
             return False
@@ -89,8 +103,9 @@ class CustomerService:
         sort_by = validated_data.get('sort_by', 'id')
         sort_order = validated_data.get('sort_order', 'asc')
         search = validated_data.get('search', None)
+        is_deleted = validated_data.get('is_deleted', False)
 
-        queryset = Customer.objects.filter(is_deleted=False)
+        queryset = Customer.objects.filter(is_deleted=is_deleted)
 
         if search:
             queryset = queryset.filter(

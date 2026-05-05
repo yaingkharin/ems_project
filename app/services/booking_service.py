@@ -159,8 +159,8 @@ class BookingService:
         Use with caution - this action cannot be undone.
         """
         try:
-            # Use direct Manager to find even soft-deleted items
-            booking = Booking.objects.get(pk=pk)
+            # Use all_objects to find even soft-deleted items
+            booking = Booking.all_objects.get(pk=pk)
             
             # Rollback ticket sold count if it was confirmed AND it wasn't already soft-deleted
             # (If it was soft-deleted, stock was already rolled back in delete_booking)
@@ -176,6 +176,32 @@ class BookingService:
             return False
 
     @staticmethod
+    @transaction.atomic
+    def restore_booking(pk: int):
+        """
+        Restore a soft-deleted booking.
+        """
+        try:
+            # Use all_objects to find items that are currently soft-deleted
+            booking = Booking.all_objects.get(pk=pk, is_deleted=True)
+            
+            # Restore booking
+            booking.is_deleted = False
+            booking.deleted_at = None
+            booking.save()
+            
+            # Restore ticket sold count ONLY if it was confirmed
+            if booking.status == 'confirmed' and booking.ticket:
+                ticket = booking.ticket
+                ticket.refresh_from_db()
+                ticket.sold += booking.quantity
+                ticket.save()
+                
+            return True
+        except ObjectDoesNotExist:
+            return False
+
+    @staticmethod
     def get_paginated_bookings(params: Dict[str, Any]):
         page = int(params.get('page', 1))
         limit = int(params.get('limit', 100))
@@ -184,7 +210,7 @@ class BookingService:
         search = params.get('search')
         filters = params.get('filters') or {}
 
-        qs = Booking.objects.select_related('customer', 'event', 'ticket').filter(is_deleted=False)
+        qs = Booking.all_objects.select_related('customer', 'event', 'ticket').filter(is_deleted=params.get('is_deleted', False))
 
         if search:
             qs = qs.filter(
@@ -197,6 +223,8 @@ class BookingService:
             qs = qs.filter(event_id=filters['event_id'])
         if 'ticket_id' in filters:
             qs = qs.filter(ticket_id=filters['ticket_id'])
+        if 'status' in filters:
+            qs = qs.filter(status=filters['status'])
 
         order_prefix = '' if sort_order == 'asc' else '-'
         qs = qs.order_by(f"{order_prefix}{sort_by}")

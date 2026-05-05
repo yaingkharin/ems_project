@@ -7,3 +7,4 @@ class PaginationRequest(serializers.Serializer):
     sort_order = serializers.ChoiceField(choices=['asc', 'desc'], required=False, default='asc', help_text="Sort order (asc/desc)")
     search = serializers.CharField(required=False, allow_blank=True, default=None, help_text="Search term")
     filters = serializers.JSONField(required=False, default=dict, help_text="JSON object for additional filter parameters")
+    is_deleted = serializers.BooleanField(required=False, default=False, help_text="Filter by deleted records")

@@ -167,3 +167,35 @@ class PaginatedTicketListView(APIView):
                 success=False,
                 status_code=status.HTTP_400_BAD_REQUEST
             )
+
+
+class TicketRestoreView(APIView):
+    permission_classes = [IsAuthenticated, CheckPermission]
+    method_permissions = {
+        'POST': 'restore_tickets',
+    }
+
+    @swagger_auto_schema(
+        operation_description="Restore a soft-deleted ticket.",
+        responses={200: "Success", 404: "Not Found"}
+    )
+    def post(self, request, pk):
+        if TicketService.restore_ticket(pk):
+            return api_response(message="Ticket restored successfully.")
+        return api_response(message="Ticket not found or not deleted.", success=False, status_code=status.HTTP_404_NOT_FOUND)
+
+
+class TicketPermanentDeleteView(APIView):
+    permission_classes = [IsAuthenticated, CheckPermission]
+    method_permissions = {
+        'DELETE': 'force_delete_tickets',
+    }
+
+    @swagger_auto_schema(
+        operation_description="Permanently delete a ticket from the database.",
+        responses={204: "No Content", 404: "Not Found"}
+    )
+    def delete(self, request, pk):
+        if TicketService.force_delete_ticket(pk):
+            return api_response(message="Ticket permanently deleted.", status_code=status.HTTP_204_NO_CONTENT)
+        return api_response(message="Ticket not found.", success=False, status_code=status.HTTP_404_NOT_FOUND)

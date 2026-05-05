@@ -25,7 +25,6 @@ class VenueService:
         venue = Venue.objects.create(
             name=request_data['name'],
             address=request_data['address'],
-            capacity=request_data['capacity'],
             contact_info=request_data.get('contact_info')
         )
         return VenueResponse(venue).data
@@ -49,7 +48,6 @@ class VenueService:
             venue = Venue.objects.get(venue_id=venue_id, is_deleted=False)
             venue.name = request_data.get('name', venue.name)
             venue.address = request_data.get('address', venue.address)
-            venue.capacity = request_data.get('capacity', venue.capacity)
             venue.contact_info = request_data.get('contact_info', venue.contact_info)
             venue.save()
             return VenueResponse(venue).data
@@ -82,6 +80,21 @@ class VenueService:
             return False
 
     @staticmethod
+    def restore_venue(venue_id: int) -> bool:
+        """
+        Restore a soft-deleted venue.
+        """
+        try:
+            # Look for soft-deleted item specifically
+            venue = Venue.objects.get(venue_id=venue_id, is_deleted=True)
+            venue.is_deleted = False
+            venue.deleted_at = None
+            venue.save()
+            return True
+        except ObjectDoesNotExist:
+            return False
+
+    @staticmethod
     def get_paginated_venues(validated_data: dict) -> dict:
         page = validated_data.get('page', 1)
         limit = validated_data.get('limit', 100)
@@ -90,7 +103,7 @@ class VenueService:
         search = validated_data.get('search', None)
         filters = validated_data.get('filters', {})
 
-        queryset = Venue.objects.filter(is_deleted=False)
+        queryset = Venue.objects.filter(is_deleted=validated_data.get('is_deleted', False))
 
         if filters:
             queryset = queryset.filter(**filters)

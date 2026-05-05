@@ -150,3 +150,35 @@ class PaginatedVenueListView(APIView):
                 success=False,
                 status_code=status.HTTP_400_BAD_REQUEST
             )
+
+
+class VenueRestoreView(APIView):
+    permission_classes = [IsAuthenticated, CheckPermission]
+    method_permissions = {
+        'POST': 'restore_venues',
+    }
+
+    @swagger_auto_schema(
+        operation_description="Restore a soft-deleted venue.",
+        responses={200: "Success", 404: "Not Found"}
+    )
+    def post(self, request, pk):
+        if VenueService.restore_venue(pk):
+            return api_response(message="Venue restored successfully.")
+        return api_response(message="Venue not found or not deleted.", success=False, status_code=status.HTTP_404_NOT_FOUND)
+
+
+class VenuePermanentDeleteView(APIView):
+    permission_classes = [IsAuthenticated, CheckPermission]
+    method_permissions = {
+        'DELETE': 'force_delete_venues',
+    }
+
+    @swagger_auto_schema(
+        operation_description="Permanently delete a venue from the database.",
+        responses={204: "No Content", 404: "Not Found"}
+    )
+    def delete(self, request, pk):
+        if VenueService.force_delete_venue(pk):
+            return api_response(message="Venue permanently deleted.", status_code=status.HTTP_204_NO_CONTENT)
+        return api_response(message="Venue not found.", success=False, status_code=status.HTTP_404_NOT_FOUND)

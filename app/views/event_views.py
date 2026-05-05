@@ -177,3 +177,35 @@ class PaginatedEventListView(APIView):
                 success=False,
                 status_code=status.HTTP_400_BAD_REQUEST
             )
+
+
+class EventRestoreView(APIView):
+    permission_classes = [IsAuthenticated, CheckPermission]
+    method_permissions = {
+        'POST': 'restore_events',
+    }
+
+    @swagger_auto_schema(
+        operation_description="Restore a soft-deleted event.",
+        responses={200: "Success", 404: "Not Found"}
+    )
+    def post(self, request, pk):
+        if EventService.restore_event(pk):
+            return api_response(message="Event restored successfully.")
+        return api_response(message="Event not found or not deleted.", success=False, status_code=status.HTTP_404_NOT_FOUND)
+
+
+class EventPermanentDeleteView(APIView):
+    permission_classes = [IsAuthenticated, CheckPermission]
+    method_permissions = {
+        'DELETE': 'force_delete_events',
+    }
+
+    @swagger_auto_schema(
+        operation_description="Permanently delete an event from the database.",
+        responses={204: "No Content", 404: "Not Found"}
+    )
+    def delete(self, request, pk):
+        if EventService.force_delete_event(pk):
+            return api_response(message="Event permanently deleted.", status_code=status.HTTP_204_NO_CONTENT)
+        return api_response(message="Event not found.", success=False, status_code=status.HTTP_404_NOT_FOUND)

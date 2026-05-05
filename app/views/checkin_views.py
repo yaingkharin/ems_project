@@ -246,4 +246,36 @@ class ConfirmCheckinView(APIView):
                 message=str(e),
                 success=False,
                 status_code=status.HTTP_400_BAD_REQUEST
-            )
+            )
+
+
+class CheckinRestoreView(APIView):
+    permission_classes = [IsAuthenticated, CheckPermission]
+    method_permissions = {
+        'POST': 'restore_checkins',
+    }
+
+    @swagger_auto_schema(
+        operation_description="Restore a soft-deleted check-in.",
+        responses={200: "Success", 404: "Not Found"}
+    )
+    def post(self, request, pk):
+        if CheckinService.restore_checkin(pk):
+            return api_response(message="Check-in restored successfully.")
+        return api_response(message="Check-in not found or not deleted.", success=False, status_code=status.HTTP_404_NOT_FOUND)
+
+
+class CheckinPermanentDeleteView(APIView):
+    permission_classes = [IsAuthenticated, CheckPermission]
+    method_permissions = {
+        'DELETE': 'force_delete_checkins',
+    }
+
+    @swagger_auto_schema(
+        operation_description="Permanently delete a check-in from the database.",
+        responses={204: "No Content", 404: "Not Found"}
+    )
+    def delete(self, request, pk):
+        if CheckinService.force_delete_checkin(pk):
+            return api_response(message="Check-in permanently deleted.", status_code=status.HTTP_204_NO_CONTENT)
+        return api_response(message="Check-in not found.", success=False, status_code=status.HTTP_404_NOT_FOUND)

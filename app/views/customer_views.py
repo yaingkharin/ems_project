@@ -132,3 +132,35 @@ class PaginatedCustomerListView(APIView):
                 success=False,
                 status_code=status.HTTP_400_BAD_REQUEST
             )
+
+
+class CustomerRestoreView(APIView):
+    permission_classes = [IsAuthenticated, CheckPermission]
+    method_permissions = {
+        'POST': 'restore_customers',
+    }
+
+    @swagger_auto_schema(
+        operation_description="Restore a soft-deleted customer.",
+        responses={200: "Success", 404: "Not Found"}
+    )
+    def post(self, request, pk):
+        if CustomerService.restore_customer(pk):
+            return api_response(message="Customer restored successfully.")
+        return api_response(message="Customer not found or not deleted.", success=False, status_code=status.HTTP_404_NOT_FOUND)
+
+
+class CustomerPermanentDeleteView(APIView):
+    permission_classes = [IsAuthenticated, CheckPermission]
+    method_permissions = {
+        'DELETE': 'force_delete_customers',
+    }
+
+    @swagger_auto_schema(
+        operation_description="Permanently delete a customer from the database.",
+        responses={204: "No Content", 404: "Not Found"}
+    )
+    def delete(self, request, pk):
+        if CustomerService.force_delete_customer(pk):
+            return api_response(message="Customer permanently deleted.", status_code=status.HTTP_204_NO_CONTENT)
+        return api_response(message="Customer not found.", success=False, status_code=status.HTTP_404_NOT_FOUND)

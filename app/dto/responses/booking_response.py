@@ -9,6 +9,7 @@ class BookingResponse(serializers.ModelSerializer):
     customer = CustomerCustomResponse(read_only=True)
     event = EventCustomResponse(read_only=True)
     ticket = TicketCustomResponse(read_only=True)
+    status = serializers.SerializerMethodField()
     payment_method = serializers.SerializerMethodField()
     is_checked_in = serializers.SerializerMethodField()
     checkin_history = serializers.SerializerMethodField()
@@ -21,6 +22,16 @@ class BookingResponse(serializers.ModelSerializer):
             'status', 'booking_date', 'payment_method', 'is_checked_in',
             'checkin_history', 'created_at', 'updated_at'
         ]
+
+    def get_status(self, obj):
+        if obj.status in ['confirmed', 'cancelled']:
+            return obj.status
+            
+        # If pending (not paid), check event status
+        if obj.event.get_computed_status() == 'completed':
+            return 'cancelled'
+            
+        return obj.status
 
     def get_payment_method(self, obj):
         # Taking the most recent payment's method

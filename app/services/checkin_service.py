@@ -151,6 +151,20 @@ class CheckinService:
             return False
 
     @staticmethod
+    def restore_checkin(checkin_id: int) -> bool:
+        """
+        Restore a soft-deleted check-in.
+        """
+        try:
+            checkin = Checkin.objects.get(id=checkin_id, is_deleted=True)
+            checkin.is_deleted = False
+            checkin.deleted_at = None
+            checkin.save()
+            return True
+        except ObjectDoesNotExist:
+            return False
+
+    @staticmethod
     def get_paginated_checkins(validated_data: dict) -> dict:
         """
         Retrieves a paginated list of check-ins with optional filtering and searching.
@@ -162,7 +176,7 @@ class CheckinService:
         search = validated_data.get('search', None)
         filters = validated_data.get('filters', {})
 
-        queryset = Checkin.objects.select_related('booking').filter(is_deleted=False)
+        queryset = Checkin.objects.select_related('booking').filter(is_deleted=validated_data.get('is_deleted', False))
 
         if filters:
             queryset = queryset.filter(**filters)
