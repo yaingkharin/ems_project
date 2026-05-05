@@ -5,7 +5,8 @@ from app.views.report_views import (
     PaymentMethodReportView, 
     AttendanceReportView,
     EventBookingReportView,
-    CheckInReportView
+    CheckInReportView,
+    TicketReportView
 )
 
 urlpatterns = [
@@ -15,5 +16,6 @@ urlpatterns = [
     path('attendance/', AttendanceReportView.as_view(), name='report_attendance'),
     path('event-report-list/', EventBookingReportView.as_view(), name='event_report_list'),
     path('check-in-report/', CheckInReportView.as_view(), name='check_in_report'),
+    path('tickets/', TicketReportView.as_view(), name='report_tickets'),
 ]
 

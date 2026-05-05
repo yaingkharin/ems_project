@@ -233,3 +233,92 @@ class ReportService:
             'total_pages': paginator.num_pages
         }
 
+    @staticmethod
+    def get_ticket_report(params: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Ticket Summary Report: Aggregates stats per event and ticket type.
+        Supports filtering by event_id, ticket_type, and date range.
+        """
+        page = int(params.get('page', 1))
+        limit = int(params.get('limit', 10))
+        filters = params.get('filters', {})
+
+        # Base queryset: Tickets joined with Events
+        queryset = Ticket.objects.select_related('event').filter(is_deleted=False)
+
+        # Apply Filters
+        if 'event_id' in filters and filters['event_id']:
+            queryset = queryset.filter(event_id=filters['event_id'])
+        if 'ticket_type' in filters and filters['ticket_type']:
+            queryset = queryset.filter(ticket_type=filters['ticket_type'])
+        if 'start_date' in filters and filters['start_date']:
+            queryset = queryset.filter(event__event_date__gte=filters['start_date'])
+        if 'end_date' in filters and filters['end_date']:
+            queryset = queryset.filter(event__event_date__lte=filters['end_date'])
+
+        # Aggregation for Charts (Total by type across filtered set)
+        tickets_by_type = list(queryset.values('ticket_type').annotate(
+            total_sold=Sum('sold'),
+            total_revenue=Sum(F('sold') * F('price'), output_field=FloatField())
+        ))
+
+        # Overall Summary KPIs
+        summary_totals = queryset.aggregate(
+            total_tickets=Sum('quantity'),
+            total_sold=Sum('sold'),
+            total_revenue=Sum(F('sold') * F('price'), output_field=FloatField())
+        )
+        total_tickets = summary_totals['total_tickets'] or 0
+        total_sold = summary_totals['total_sold'] or 0
+        total_revenue = summary_totals['total_revenue'] or 0
+        total_remaining = total_tickets - total_sold
+
+        # Ordering for the table
+        queryset = queryset.order_by('event__event_name', 'ticket_type')
+
+        # Pagination
+        paginator = Paginator(queryset, limit)
+        try:
+            paginated_qs = paginator.page(page)
+        except (PageNotAnInteger, EmptyPage):
+            paginated_qs = paginator.page(1)
+
+        # Table Items
+        report_items = []
+        for ticket in paginated_qs:
+            sold = ticket.sold or 0
+            qty = ticket.quantity or 0
+            remaining = qty - sold
+            sales_percent = (sold / qty * 100) if qty > 0 else 0
+            revenue = float(sold * ticket.price)
+            
+            report_items.append({
+                'id': ticket.id,
+                'event_name': ticket.event.event_name,
+                'ticket_type': ticket.ticket_type,
+                'price': float(ticket.price),
+                'total_tickets': qty,
+                'sold': sold,
+                'remaining': remaining,
+                'sales_percent': round(sales_percent, 2),
+                'revenue': revenue
+            })
+
+        return {
+            'items': report_items,
+            'summary': {
+                'total_tickets': total_tickets,
+                'total_sold': total_sold,
+                'total_remaining': total_remaining,
+                'total_revenue': round(total_revenue, 2),
+                'sold_percent': round((total_sold / total_tickets * 100), 2) if total_tickets > 0 else 0,
+                'remaining_percent': round((total_remaining / total_tickets * 100), 2) if total_tickets > 0 else 0
+            },
+            'charts': {
+                'tickets_by_type': tickets_by_type,
+            },
+            'total': paginator.count,
+            'page': paginated_qs.number,
+            'limit': limit,
+            'total_pages': paginator.num_pages
+        }

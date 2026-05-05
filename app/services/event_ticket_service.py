@@ -160,6 +160,10 @@ class EventTicketService:
             qs = qs.filter(booking_id=filters['booking.id'])
         if 'status' in filters:
             qs = qs.filter(status=filters['status'])
+        if 'event_id' in filters:
+            qs = qs.filter(booking__event_id=filters['event_id'])
+        if 'booking__event_id' in filters:
+            qs = qs.filter(booking__event_id=filters['booking__event_id'])
 
         # Ordering
         order_prefix = '' if sort_order == 'asc' else '-'

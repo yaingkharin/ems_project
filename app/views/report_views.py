@@ -431,3 +431,23 @@ class CheckInReportView(generics.ListAPIView):
 
         return response
 
+class TicketReportView(APIView):
+    """
+    Provides a ticket summary report including KPIs, detailed table data, and chart metrics.
+    """
+    permission_classes = [IsAuthenticated, CheckPermission]
+    method_permissions = {'POST': 'view_reports'}
+
+    @swagger_auto_schema(
+        operation_description="Retrieve a paginated ticket summary report with KPIs and chart data.",
+        request_body=PaginationRequest,
+        responses={200: "Success", 400: "Bad Request"}
+    )
+    def post(self, request):
+        serializer = PaginationRequest(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        try:
+            report_data = ReportService.get_ticket_report(serializer.validated_data)
+            return api_response(data=report_data, message="Ticket report retrieved successfully.")
+        except Exception as e:
+            return api_response(message=str(e), success=False, status_code=400)
