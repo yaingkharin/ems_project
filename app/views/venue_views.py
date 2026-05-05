@@ -87,10 +87,13 @@ class VenueRetrieveUpdateDestroyView(APIView):
         serializer.is_valid(raise_exception=True)
         validated_data = serializer.validated_data
 
-        venue_response_dto = VenueService.update_venue(pk, validated_data)
-        if venue_response_dto:
-            return api_response(data=venue_response_dto, message="Venue updated successfully.")
-        return api_response(message="Venue not found.", success=False, status_code=status.HTTP_404_NOT_FOUND)
+        try:
+            venue_response_dto = VenueService.update_venue(pk, validated_data)
+            if venue_response_dto:
+                return api_response(data=venue_response_dto, message="Venue updated successfully.")
+            return api_response(message="Venue not found.", success=False, status_code=status.HTTP_404_NOT_FOUND)
+        except ValueError as e:
+            return api_response(message=str(e), success=False, status_code=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="Delete a venue by ID.",

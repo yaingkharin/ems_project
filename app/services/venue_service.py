@@ -22,10 +22,24 @@ class VenueService:
 
     @staticmethod
     def create_venue(request_data: dict) -> VenueResponse:
+        name = request_data['name']
+        address = request_data['address']
+        contact_info = request_data.get('contact_info')
+
+        # Check for duplicate venue (same name, address, and contact_info)
+        duplicate = Venue.objects.filter(
+            name__iexact=name,
+            address__iexact=address,
+            contact_info__iexact=contact_info,
+            is_deleted=False
+        ).exists()
+        if duplicate:
+            raise ValueError("Venue with the same Name, Address, and Contact Info already exists.")
+
         venue = Venue.objects.create(
-            name=request_data['name'],
-            address=request_data['address'],
-            contact_info=request_data.get('contact_info')
+            name=name,
+            address=address,
+            contact_info=contact_info
         )
         return VenueResponse(venue).data
 
@@ -46,9 +60,23 @@ class VenueService:
     def update_venue(venue_id: int, request_data: dict) -> Optional[VenueResponse]:
         try:
             venue = Venue.objects.get(venue_id=venue_id, is_deleted=False)
-            venue.name = request_data.get('name', venue.name)
-            venue.address = request_data.get('address', venue.address)
-            venue.contact_info = request_data.get('contact_info', venue.contact_info)
+            new_name = request_data.get('name', venue.name)
+            new_address = request_data.get('address', venue.address)
+            new_contact_info = request_data.get('contact_info', venue.contact_info)
+
+            # Check for duplicate venue (excluding current venue)
+            duplicate = Venue.objects.filter(
+                name__iexact=new_name,
+                address__iexact=new_address,
+                contact_info__iexact=new_contact_info,
+                is_deleted=False
+            ).exclude(venue_id=venue_id).exists()
+            if duplicate:
+                raise ValueError("Venue with the same Name, Address, and Contact Info already exists.")
+
+            venue.name = new_name
+            venue.address = new_address
+            venue.contact_info = new_contact_info
             venue.save()
             return VenueResponse(venue).data
         except ObjectDoesNotExist:

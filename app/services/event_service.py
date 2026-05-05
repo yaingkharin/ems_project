@@ -1,3 +1,4 @@
+import datetime
 from typing import List, Optional
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -57,6 +58,13 @@ class EventService:
             request_data["end_time"] = helper.format_to_time(request_data["end_time"])
 
         # Create Event
+        # Validate that the event is not in the past
+        now_local = timezone.localtime(timezone.now())
+        event_datetime = timezone.make_aware(datetime.datetime.combine(request_data["event_date"], request_data["end_time"]))
+        
+        if event_datetime < now_local:
+            raise ValidationError("Cannot create an event in the past.")
+
         event = Event.objects.create(
             category=category,
             venue=venue,
@@ -122,6 +130,13 @@ class EventService:
             # Update other fields
             for key, value in request_data.items():
                 setattr(event, key, value)
+
+            # Validate that the updated event is not in the past
+            now_local = timezone.localtime(timezone.now())
+            event_datetime = timezone.make_aware(datetime.datetime.combine(event.event_date, event.end_time))
+            
+            if event_datetime < now_local:
+                raise ValidationError("Cannot set an event date/time to the past.")
 
             event.save()
             return event

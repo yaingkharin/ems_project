@@ -20,9 +20,27 @@ class CategoryService:
 
     @staticmethod
     def create_category(request_data: dict) -> Category: # Return type changed to Category model
+        category_name = request_data['category_name']
+        description = request_data.get('description', None)
+
+        # Check for duplicate category (same category_name and description)
+        duplicate = Category.objects.filter(
+            category_name__iexact=category_name,
+            description__iexact=description if description else '',
+            is_deleted=False
+        ).exists()
+        if not duplicate and description is None:
+            duplicate = Category.objects.filter(
+                category_name__iexact=category_name,
+                description__isnull=True,
+                is_deleted=False
+            ).exists()
+        if duplicate:
+            raise ValueError("Category with the same Name and Description already exists.")
+
         category = Category.objects.create(
-            category_name=request_data['category_name'],
-            description=request_data.get('description', None)
+            category_name=category_name,
+            description=description
         )
         return category # Return the model instance
 
@@ -41,8 +59,23 @@ class CategoryService:
     def update_category(id: int, request_data: dict) -> Optional[Category]: # Return type changed to Category model
         try:
             category = Category.objects.get(id=id, is_deleted=False)
-            category.category_name = request_data.get('category_name', category.category_name)
-            category.description = request_data.get('description', category.description)
+            new_name = request_data.get('category_name', category.category_name)
+            new_description = request_data.get('description', category.description)
+
+            # Check for duplicate category (excluding current)
+            qs = Category.objects.filter(
+                category_name__iexact=new_name,
+                is_deleted=False
+            ).exclude(id=id)
+            if new_description:
+                dup = qs.filter(description__iexact=new_description).exists()
+            else:
+                dup = qs.filter(Q(description__isnull=True) | Q(description='')).exists()
+            if dup:
+                raise ValueError("Category with the same Name and Description already exists.")
+
+            category.category_name = new_name
+            category.description = new_description
             category.save()
             return category
         except ObjectDoesNotExist:

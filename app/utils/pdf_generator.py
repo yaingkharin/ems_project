@@ -163,35 +163,7 @@ def generate_ticket_pdf(booking, event_tickets):
         p.circle(CARD_X + CARD_W, grid_y, 0.18 * inch, stroke=1, fill=1)
         p.restoreState()
 
-        # --- 7. Footer Pass Section ---
-        pass_y = CARD_Y + 0.4 * inch
-        pass_h = 1.1 * inch
-        p.saveState()
-        p.setFillColor(BG_LIGHT)
-        p.roundRect(CARD_X + 0.35 * inch, pass_y, CARD_W - 0.7 * inch, pass_h, 35, stroke=0, fill=1)
-        
-        p.setFillColor(TEXT_LIGHT)
-        p.setFont("Helvetica-Bold", 9)
-        p.drawString(CARD_X + 0.7 * inch, pass_y + 0.65 * inch, "ENTRY PASS")
-        p.setFillColor(TEXT_DARK)
-        p.setFont("Helvetica-Bold", 20)
-        p.drawString(CARD_X + 0.7 * inch, pass_y + 0.3 * inch, "ADMIT ONE")
-        
-        # QR Code in Footer
-        if ticket.qr_code:
-            try:
-                if ticket.qr_code.startswith("data:image"):
-                    header, encoded = ticket.qr_code.split(",", 1)
-                    img_data = base64.b64decode(encoded)
-                    qr_img = ImageReader(io.BytesIO(img_data))
-                else:
-                    # It's a URL (e.g., from qrserver.com)
-                    qr_img = ImageReader(ticket.qr_code)
-                
-                p.drawImage(qr_img, CARD_X + CARD_W - 1.4 * inch, pass_y + 0.15 * inch, width=0.8*inch, height=0.8*inch)
-            except Exception as e:
-                print(f"Error drawing QR code: {e}")
-        p.restoreState()
+
 
     p.save()
     buffer.seek(0)

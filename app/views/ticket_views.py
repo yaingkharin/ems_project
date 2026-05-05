@@ -97,11 +97,14 @@ class TicketRetrieveUpdateDestroyView(APIView):
         serializer.is_valid(raise_exception=True)
         validated_data = serializer.validated_data
 
-        ticket = TicketService.update_ticket(pk, validated_data)
-        if ticket:
-            response_serializer = TicketResponse(ticket)
-            return api_response(data=response_serializer.data, message="Ticket updated successfully.")
-        return api_response(message="Ticket not found.", success=False, status_code=status.HTTP_404_NOT_FOUND)
+        try:
+            ticket = TicketService.update_ticket(pk, validated_data)
+            if ticket:
+                response_serializer = TicketResponse(ticket)
+                return api_response(data=response_serializer.data, message="Ticket updated successfully.")
+            return api_response(message="Ticket not found.", success=False, status_code=status.HTTP_404_NOT_FOUND)
+        except ValueError as e:
+            return api_response(message=str(e), success=False, status_code=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="Delete a ticket by ID.",

@@ -103,11 +103,14 @@ class CategoryRetrieveUpdateDestroyView(APIView):
         serializer.is_valid(raise_exception=True)
         validated_data = serializer.validated_data
 
-        category = CategoryService.update_category(pk, validated_data)
-        if category:
-            response_serializer = CategoryResponse(category)
-            return api_response(data=response_serializer.data, message="Category updated successfully.")
-        return api_response(message="Category not found.", success=False, status_code=status.HTTP_404_NOT_FOUND)
+        try:
+            category = CategoryService.update_category(pk, validated_data)
+            if category:
+                response_serializer = CategoryResponse(category)
+                return api_response(data=response_serializer.data, message="Category updated successfully.")
+            return api_response(message="Category not found.", success=False, status_code=status.HTTP_404_NOT_FOUND)
+        except ValueError as e:
+            return api_response(message=str(e), success=False, status_code=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="Delete a category by ID.",

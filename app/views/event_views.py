@@ -107,11 +107,14 @@ class EventRetrieveUpdateDestroyView(APIView):
         serializer.is_valid(raise_exception=True)
         validated_data = serializer.validated_data
 
-        event = EventService.update_event(pk, validated_data)
-        if event:
-            response_serializer = EventResponse(event)
-            return api_response(data=response_serializer.data, message="Event updated successfully.")
-        return api_response(message="Event not found.", success=False, status_code=status.HTTP_404_NOT_FOUND)
+        try:
+            event = EventService.update_event(pk, validated_data)
+            if event:
+                response_serializer = EventResponse(event)
+                return api_response(data=response_serializer.data, message="Event updated successfully.")
+            return api_response(message="Event not found.", success=False, status_code=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return api_response(message=str(e), success=False, status_code=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         operation_description="Delete a event by ID.",

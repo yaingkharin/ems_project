@@ -24,9 +24,19 @@ class TicketService:
         event = TicketService._resolve_fk(request_data.pop('event_id', None), Event)
         if not event:
             raise ValueError('Valid event_id is required')
-            
+
+        ticket_type = request_data.get('ticket_type')
+
+        # Check for duplicate ticket type for the same event
+        if Ticket.objects.filter(event=event, ticket_type=ticket_type, is_deleted=False).exists():
+            raise ValueError(f"A '{ticket_type}' ticket type already exists for this event.")
+
+        # Always start with sold=0 on creation
+        request_data.pop('sold', None)
+
         ticket = Ticket.objects.create(
             event=event,
+            sold=0,
             **request_data
         )
         return ticket
@@ -46,11 +56,23 @@ class TicketService:
     def update_ticket(ticket_id: int, request_data: dict) -> Optional[Ticket]:
         try:
             ticket = Ticket.objects.get(id=ticket_id, is_deleted=False)
+
+            # Resolve new event if provided
             if 'event_id' in request_data:
                 event = TicketService._resolve_fk(request_data.pop('event_id'), Event)
                 if event:
                     ticket.event = event
             
+            new_ticket_type = request_data.get('ticket_type', ticket.ticket_type)
+
+            # Check for duplicate ticket type for the same event (excluding self)
+            if Ticket.objects.filter(
+                event=ticket.event,
+                ticket_type=new_ticket_type,
+                is_deleted=False
+            ).exclude(id=ticket_id).exists():
+                raise ValueError(f"A '{new_ticket_type}' ticket type already exists for this event.")
+
             for key, value in request_data.items():
                 setattr(ticket, key, value)
             
